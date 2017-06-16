@@ -1,0 +1,38 @@
+#!/bin/bash
+
+mkdir -p out
+
+cp biblio/references.bib references.bib
+
+docker run --rm \
+  --workdir='/root/' \
+  -v `pwd`/:/mnt \
+  -v `pwd`/paper.tex:/root/paper.tex \
+  -v `pwd`/sections/1_intro.tex:/root/sections/1_intro.tex \
+  -v `pwd`/references.bib:/root/references.bib \
+  -v `pwd`/.deps/ametsoc.cls:/root/texmf/tex/latex/ametsoc.cls \
+  -v `pwd`/.deps/ametsoc2014.bst:/root/texmf/bibtex/bst/ametsoc2014.bst \
+  -v `pwd`/.deps/ACM-Reference-Format.bst:/root/texmf/bibtex/bst/ACM-Reference-Format.bst \
+  -v `pwd`/.deps/sigplanconf-eurosys.cls:/root/texmf/bibtex/bst/sigplanconf-eurosys.cls \
+  -v `pwd`/.deps/acmart.cls:/root/texmf/bibtex/bst/acmart.cls \
+  -v `pwd`/figures:/root/figures \
+  -v `pwd`/out:/root/out \
+  ivotron/texlive:latest sh -c \
+    "pdflatex paper &&
+     bibtex paper &&
+     pdflatex paper &&
+     pdflatex paper &&
+     mv paper.pdf /root/out/" &> build.log
+
+if [ $? != "0" ] ; then
+  echo "ERROR"
+  cat build.log
+  rm build.log
+  exit 1
+fi
+
+mv out/paper.pdf .
+rm -r out
+rm build.log
+
+exit 0

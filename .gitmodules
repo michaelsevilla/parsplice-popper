@@ -1,0 +1,3 @@
+[submodule "paper/biblio"]
+	path = paper/biblio
+	url = https://github.com/michaelsevilla/biblio.git

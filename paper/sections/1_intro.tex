@@ -1,0 +1,31 @@
+\section{Introduction}
+
+% What is Mantle
+Mantle~\cite{sevilla:sc15-mantle} is a great paper.
+
+% What is HXHIM
+%Problem: cloud key-value stores do perform well for tightly coupled and
+%parallel supercomputers and large data sets. 
+%- hpc: simulation data and structured (indexed in multiple dimensions)
+%- petabytes of raw files
+%- infiniband/RDMA instead of TCP, resource manager instead of daemons
+%Existing: cloud kv-stores are diverse/unstructured
+%- partitioned with consistenct hash
+%Motivation:
+%  - allows PLFS to materialize reads on compute cluster
+%  - big data capabilities within an HPC environment; coordinates = key
+%    - enhances locality, access rate, semantically meaningfulG
+%
+%Solution: MDHIM
+%- HPC: infiniband, dynamic servers, pluggable DB, leverage resources, library
+%- partitioned by range (not hash): # of spawned servers affects performance
+%- cursor type operations and bulk ops: off-load query decision making to clients
+%- multiple dimensions: users create secondary index instances
+%
+%Why does PLFS need a file system back end in the first place?
+%How does ingest work if they are spawned at job start?
+
+% Why do they make sense together?
+% HXHIM has operations for:
+% - adjusting the distribution of keys
+% - builk inserations/retrievelas
