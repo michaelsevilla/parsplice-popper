@@ -1,31 +1,74 @@
 \section{Introduction}
 
-% What is Mantle
-Mantle~\cite{sevilla:sc15-mantle} is a great paper.
+% What is the problem?
+Migrating resources is a useful tool for balancing load and improving
+performance for systems that service highly accessed data ({\it e.g.},
+key-value stores, file system metadata, etc.) but deciding where and how to
+migrate is complicated by the scale and complexity of today's HPC
+architectures. One of the most difficult trade-offs to reason about is to keep
+data\footnote{In this paper, we use the term ``data" to refer to the
+partitioned key-value pairs AND file system metadata.} distribution vs.
+concentration.
 
-% What is HXHIM
-%Problem: cloud key-value stores do perform well for tightly coupled and
-%parallel supercomputers and large data sets. 
-%- hpc: simulation data and structured (indexed in multiple dimensions)
-%- petabytes of raw files
-%- infiniband/RDMA instead of TCP, resource manager instead of daemons
-%Existing: cloud kv-stores are diverse/unstructured
-%- partitioned with consistenct hash
-%Motivation:
-%  - allows PLFS to materialize reads on compute cluster
-%  - big data capabilities within an HPC environment; coordinates = key
-%    - enhances locality, access rate, semantically meaningfulG
-%
-%Solution: MDHIM
-%- HPC: infiniband, dynamic servers, pluggable DB, leverage resources, library
-%- partitioned by range (not hash): # of spawned servers affects performance
-%- cursor type operations and bulk ops: off-load query decision making to clients
-%- multiple dimensions: users create secondary index instances
-%
-%Why does PLFS need a file system back end in the first place?
-%How does ingest work if they are spawned at job start?
+% Why is concentration vs. distribution difficult?
+Deciding between distribution and concentration is difficult because the
+techniques partition data differently; distribution spreads it across a larger
+set of nodes while concentration keeps it on a smaller set of nodes.  These
+migration techniques are designed to improve performance in different ways;
+distributing data can divide the across more nodes, reducing the burden on
+overloaded servers while data concentrated on a smaller number of nodes benefit
+from techniques that reduce the number of RPCs, like batching, caching, and
+network partitioning, As a result, selecting the wrong technique can have
+catastrophic consequences, {\it e.g.}, migrating data to an already overloaded
+server or increasing the network hops by spreading data across an underutilized
+cluster.
 
-% Why do they make sense together?
-% HXHIM has operations for:
-% - adjusting the distribution of keys
-% - builk inserations/retrievelas
+% What we did in the paper
+This paper takes an API designed to migrate file system metadata, applies it to
+an HPC key-value store, and shows the generality of the load balancing API
+approach. The API helps control distribution and concentration by letting the
+administrator define how to migrate load, where to migrate load, and how much
+load to migrate. While designed for a different domain, this API encompasses
+many of the same properties we need for an HPC key-value store, namely:
+
+\begin{itemize}
+  \item services small/frequent requests
+  \item popularity drives distribution
+  \item locality drives concentration
+\end{itemize}
+
+% Why is HXHIM a good fit?
+The motivating example for integrating the API into our HPC key-value store is
+locality of the key-value pairs in the dataset. The key-value store supports
+client-defined indices and has functions for adjusting the key distribution, so
+if the hash is defined by mesh location range queries, like finding the
+temperatures for the cells with the highest pressures, require only one RPC per
+server. Unfortunately, even with an index based on the maximum pressures,
+finding the highest temperatures for cells {\it neighboring} cells with the
+highest pressures requires extra RPCs.
+
+% What can the API do?
+Specifically, the API helps us explore the space of solutions for this problem
+that has locality. For example, the problem above has two solutions: (1) pull
+the index and re-query every server, or (2) pull the index and partial set of
+results that can be satisfied locally. Option 1 emphasizes distribution and
+incurrs extra RPCs while option 2 opts to concentrate data at the expense of
+data transfer, consistency issues, and increased memory usage.  Both options
+have advantages but inserting an API to control the mechanisms helps future
+programmers quickly evaluate both options and design policies for their
+workload.
+
+% What do we contribute?
+In this paper, we make the following contributions:
+
+\begin{enumerate}
+
+  \item protype that controls concentration and distribution using the key
+  redistribution and cursor type mechanisms
+  from~\cite{greenberg:hotstorage2015-mdhim}. 
+
+  \item quantifies benefits of server/client-side caching, many small messages,
+  and bulk operations.
+
+\end{enumerate}
+

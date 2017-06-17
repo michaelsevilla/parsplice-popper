@@ -1,0 +1,22 @@
+\section{Background}
+
+Mantle speeds up file systems by making metadata access faster, leveraging the
+fact that file system metadata IO imposes small and frequent accesses on the
+underlying storage system. It uses resource migration to load balance file
+system metadata across a dedicated metadata cluster and 
+
+
+Mantle~\cite{sevilla:sc15-mantle} is a programmable file system metadata
+balancer implemented on the file system above Ceph (CephFS). 
+
+system metadata IO does not scale like metadata IO~\cite{roselli:atec2000-FS-workloads}
+
+% What is HXHIM
+HXHIM is a key-value store designed for HPC architectures and multi-dimensional
+data. 
+
+% Why do they make sense together?
+% HXHIM has operations for:
+% - adjusting the distribution of keys
+% - builk inserations/retrievelas
+

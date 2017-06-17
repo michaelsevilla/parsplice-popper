@@ -9,6 +9,7 @@ docker run --rm \
   -v `pwd`/:/mnt \
   -v `pwd`/paper.tex:/root/paper.tex \
   -v `pwd`/sections/1_intro.tex:/root/sections/1_intro.tex \
+  -v `pwd`/sections/2_background.tex:/root/sections/2_background.tex \
   -v `pwd`/references.bib:/root/references.bib \
   -v `pwd`/.deps/ametsoc.cls:/root/texmf/tex/latex/ametsoc.cls \
   -v `pwd`/.deps/ametsoc2014.bst:/root/texmf/bibtex/bst/ametsoc2014.bst \
