@@ -1,35 +1,33 @@
 \section{Introduction}
 
 % What is the problem?
-Migrating resources is a useful tool for balancing load and improving
-performance for systems that service highly accessed data ({\it e.g.},
-key-value stores, file system metadata, etc.) but deciding where and how to
-migrate is complicated by the scale and complexity of today's HPC
-architectures. One of the most difficult trade-offs to reason about is to keep
-data\footnote{In this paper, we use the term ``data" to refer to the
-partitioned key-value pairs AND file system metadata.} distribution vs.
-concentration.
+Migrating resources is a useful tool for optimizing performance for systems
+that service highly accessed data ({\it e.g.} key-value stores, file system
+metadata servers, etc.); data \footnote{In this paper, we use the term ``data"
+to refer to the partitioned key-value pairs AND file system metadata.} can be
+distributed to alleviate overloaded servers or it can be concentrated, which
+gives the system the ability to leverate techniques that exploit locality, like
+bulk operations, multiple partition strategies,  secondary indexes, and
+caching.  Unfortunately, deciding which optimization to use is difficult to
+reason about, especially with the scale and complexity of today's HPC
+architectures. 
 
 % Why is concentration vs. distribution difficult?
 Deciding between distribution and concentration is difficult because the
 techniques partition data differently; distribution spreads it across a larger
-set of nodes while concentration keeps it on a smaller set of nodes.  These
-migration techniques are designed to improve performance in different ways;
-distributing data can divide the across more nodes, reducing the burden on
-overloaded servers while data concentrated on a smaller number of nodes benefit
-from techniques that reduce the number of RPCs, like batching, caching, and
-network partitioning, As a result, selecting the wrong technique can have
-catastrophic consequences, {\it e.g.}, migrating data to an already overloaded
-server or increasing the network hops by spreading data across an underutilized
-cluster.
+set of nodes while concentration keeps it on a smaller set of nodes.  As a
+result, selecting the wrong technique can have catastrophic consequences by
+compromising the performance optimizations designed for a ceratin scenario,
+{\it e.g.}, migrating data to an already overloaded server or increasing the
+network hops by spreading data across an underutilized cluster.
 
 % What we did in the paper
-This paper takes an API designed to migrate file system metadata, applies it to
-an HPC key-value store, and shows the generality of the load balancing API
-approach. The API helps control distribution and concentration by letting the
-administrator define how to migrate load, where to migrate load, and how much
-load to migrate. While designed for a different domain, this API encompasses
-many of the same properties we need for an HPC key-value store, namely:
+This paper takes an API designed to migrate file system metadata and applies it
+to an HPC key-value store.  The API helps control distribution and
+concentration by letting the administrator define how to migrate load, where to
+migrate load, and how much load to migrate. While designed for a different
+domain, this API encompasses many of the same properties we need for an HPC
+key-value store, namely:
 
 \begin{itemize}
   \item services small/frequent requests
@@ -38,14 +36,18 @@ many of the same properties we need for an HPC key-value store, namely:
 \end{itemize}
 
 % Why is HXHIM a good fit?
-The motivating example for integrating the API into our HPC key-value store is
-locality of the key-value pairs in the dataset. The key-value store supports
-client-defined indices and has functions for adjusting the key distribution, so
-if the hash is defined by mesh location range queries, like finding the
-temperatures for the cells with the highest pressures, require only one RPC per
-server. Unfortunately, even with an index based on the maximum pressures,
-finding the highest temperatures for cells {\it neighboring} cells with the
-highest pressures requires extra RPCs.
+The HPC key-value store has functionality for exploiting locality but could
+further reduce The motivating example for this integration is finding the
+maximum \(x\) of the neighbors in a mesh of another maximum \(y\). For example,
+finding the highest temperatures of the neighbors of mesh cells with the
+highest pressure. Given that the hash is defined by mesh location, finding the
+highest pressure is one RPC to each server.  Unfortunately, even with an index
+based on the maximum pressures, finding the highest temperatures for {\it
+neighboring} cells with the highest pressures requires an additional RPC per
+server.  This query has a both a high computational footprint, which suggests
+distribution to avoid hot spots, and data locality, which alternatively
+encourages concentration so the system can use its functionality for secondary
+indices, bulk operations, and key redistribution. 
 
 % What can the API do?
 Specifically, the API helps us explore the space of solutions for this problem
@@ -71,4 +73,10 @@ In this paper, we make the following contributions:
   and bulk operations.
 
 \end{enumerate}
+
+\begin{figure}
+\noindent\includegraphics[width=19pc,angle=0]{figures/example.png}\\
+\appendcaption{A1}{Balancing for distribution takes more RPCs while migrating for concentration risk of overloading the client.}
+\end{figure}
+
 
