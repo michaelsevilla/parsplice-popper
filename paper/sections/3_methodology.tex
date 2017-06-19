@@ -1,0 +1,29 @@
+\section{Methodology: Extracting Mantle Library}
+
+\subsection{Pluggable Interfaces}
+
+\begin{figure}[tb]
+  \noindent\includegraphics[width=19pc,angle=0]{figures/mantle-pluggable-interfaces.png}\\
+  \caption{The storage service must: \textcolor{blue}{\textbf{measure}}
+  resource usage, \textcolor{red}{\textbf{migrate}} resources, and
+  \textcolor{purple}{\textbf{partition}} resources. }
+  \label{fig:mantle-pluggable-interfaces}
+\end{figure}
+
+\subsubsection{Measure}
+
+In Ceph: global and local metrics ({\it e.g.}, CPU utilization, file system operation counts)
+
+In HXHIM: ???
+
+\subsubsection{Migrate}
+
+In Ceph: \texttt{export\_dir()}
+
+In HXHIM: \texttt{mdhimBPut()}, \texttt{mdhimBGet()}, ``adjusting ... keys" ???
+
+\subsubsection{Partition}
+
+In Ceph: subtrees and directory fragments
+
+In HXHIM: secondary indices, cursor types, bul operations

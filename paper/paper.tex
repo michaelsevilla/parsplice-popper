@@ -112,8 +112,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 
-\include{./sections/1_intro}
-\include{./sections/2_background}
+\input{./sections/1_intro}
+\input{./sections/2_background}
+\input{./sections/3_methodology}
 
 %% In all cases, if there is only one entry of this type within
 %% the higher level heading, use the star form: 
@@ -188,41 +189,41 @@ Start acknowledgments here.
 \bibliography{references}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TABLES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Enter tables at the end of the document, before figures.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% TABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Enter tables at the end of the document, before figures.
+%%%
 %%
+%\begin{table}[t]
+%\caption{This is a sample table caption and table layout.  Enter as many tables as
+%  necessary at the end of your manuscript. Table from Lorenz (1963).}\label{t1}
+%\begin{center}
+%\begin{tabular}{ccccrrcrc}
+%\hline\hline
+%$N$ & $X$ & $Y$ & $Z$\\
+%\hline
+% 0000 & 0000 & 0010 & 0000 \\
+% 0005 & 0004 & 0012 & 0000 \\
+% 0010 & 0009 & 0020 & 0000 \\
+% 0015 & 0016 & 0036 & 0002 \\
+% 0020 & 0030 & 0066 & 0007 \\
+% 0025 & 0054 & 0115 & 0024 \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\end{table}
 %
-\begin{table}[t]
-\caption{This is a sample table caption and table layout.  Enter as many tables as
-  necessary at the end of your manuscript. Table from Lorenz (1963).}\label{t1}
-\begin{center}
-\begin{tabular}{ccccrrcrc}
-\hline\hline
-$N$ & $X$ & $Y$ & $Z$\\
-\hline
- 0000 & 0000 & 0010 & 0000 \\
- 0005 & 0004 & 0012 & 0000 \\
- 0010 & 0009 & 0020 & 0000 \\
- 0015 & 0016 & 0036 & 0002 \\
- 0020 & 0030 & 0066 & 0007 \\
- 0025 & 0054 & 0115 & 0024 \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FIGURES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Enter figures at the end of the document, after tables.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% FIGURES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Enter figures at the end of the document, after tables.
+%%%
 %%
-%
-\begin{figure}[t]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/Fig02.pdf}\\
-  \caption{Enter the caption for your figure here.  Repeat as
-  necessary for each of your figures.}\label{f1}
-\end{figure}
+%\begin{figure}[t]
+%  \noindent\includegraphics[width=19pc,angle=0]{figures/Fig02.pdf}\\
+%  \caption{Enter the caption for your figure here.  Repeat as
+%  necessary for each of your figures.}\label{f1}
+%\end{figure}
 
 \end{document}
