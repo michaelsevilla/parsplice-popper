@@ -85,12 +85,34 @@ buffers, there is no reason that it cannot be extracted.
 
 % What is HXHIM
 HXHIM is a key-value store designed for HPC architectures and multi-dimensional
-data. 
+data. It is based off MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the
+multi-dimensional indexing middleware. Figure~\ref{fig:arch-hxhim} has a crude
+sketch of the HXHIM architecture. Each MPI rank has an instance of the
+application, which has the client library linked in. An MPI rank can also have
+a ``range server", which stores the key-value pairs in a local databse (either
+LevelDB or MySQL). Data is located with a consistent hash, which is
+configurable.
 
-% Why do they make sense together?
-% HXHIM has operations for:
-% - adjusting the distribution of keys
-% - builk inserations/retrievelas
+% What are the indexes?
+The primary and secondary indices shown on the right side of
+Figure~\ref{fig:arch-hxhim} are views of the data that the range server
+manages.  The primary index is the same hash used by the global partitioner.
+The secondary index or indices are user-defined tables organized in a different
+way from the primary index. The goal of the secondary indices is to speed up
+queries that need to aggregate dat ({\it e.g.} find the maximum values). In the
+example, the range server and the key in the primary index is located with a
+hash of the mesh location. The secondary index is organized by pressure, so
+queries asking for a certain atmosphere can be serviced in O\(1\), consisting
+of one lookup in the pressure index and one lookup into the primary index.
+
+% Why is it tailored to HPC?
+HXHIM tailors its mechanisms and policies to HPC, showing improved performance
+over cloud-based key-value stores like Cassandra. It has cursor types for
+walking the key-value store, bulk operations for exploiting data locality,
+per-job server spawning, and pluggable backends for its local database and
+network type (infiniband/RDMA). Its policies are flexible, supporting
+customized partitioning strategies and user-defined secondary indices. This
+allows the system to choose whether to send load to the client or server.
 
 \subsection{Comparing Mantle and HXHIM}
 \begin{figure}[tb]
@@ -98,4 +120,22 @@ data.
   \caption{Comparing the design goals and implementations of Mantle and HXHIM.}
   \label{fig:arch-comparison}
 \end{figure}
+
+% Why are the designed for the same type of workload?
+The intersecting portions of Figure~\ref{arch-comparison} shows how Mantle and
+HXHIM have similar designs. The workloads are very similar as the the services
+respond to small and frequent requests, which results in hot spots and flash
+crowds. As a result, popularity of the data, not the size, drives distribution
+in both systems. Both workloads also have data locality so the systems have
+mechanisms for leveraging requests with similar semantic meaning. Finally, the
+overall design of both systems is decentralized meaning that there is no
+centralized scheduler and each server has an inconsistent global view.
+
+% What are the challenges?
+Despite the similarities, integrating the Mantle API with HXHIM has both design
+and technical challenges. Mantle is reactive to the workload as opposed to
+HXHIM migrations, which are triggered based on the request type. As a result,
+Mantle has functionality for exchanging server 
+utilization (CPU, network, memory) and workload (tracks request types). HXHIM 
+% RESUME
 
