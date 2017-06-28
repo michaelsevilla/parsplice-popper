@@ -1,5 +1,9 @@
 \section{Methodology: Extracting Mantle Library}
 
+\begin{itemize}
+  \item C bindings for Mantle
+\end{itemize}
+
 \subsection{Pluggable Interfaces}
 
 \begin{figure}[tb]
@@ -12,9 +16,17 @@
 
 \subsubsection{Measure}
 
-In Ceph: global and local metrics ({\it e.g.}, CPU utilization, file system operation counts)
+The metrics measured should help the system decide ``when" to migrate server
+load. They should:
 
-In HXHIM: ???
+\begin{itemize}
+  \item tell us about the state of the server or cluster
+  \item provide some value of load, so we can partition/send it
+\end{itemize}
+
+In Ceph: global and local metrics ({\it e.g.}, CPU utilization, file system operation counts) \\
+
+In HXHIM: ???\\
 
 \subsubsection{Migrate}
 

@@ -3,7 +3,7 @@
 This paper takes the API and load balancers designed in
 Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
 balancer for Ceph, and applies them to
-HXHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
+MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
 designed for HPC.
 
 \subsection{ParSplice}
@@ -101,20 +101,20 @@ buffers, there is no reason that it cannot be extracted.
   \label{fig:arch-mantle-example}
 \end{figure}
 
-\subsection{HXHIM: Key-Value Store for HPC}
+\subsection{MDHIM: Key-Value Store for HPC}
 \label{sec:hxhim}
 
 \begin{figure}[tb]
   \noindent\includegraphics[width=19pc,angle=0]{figures/arch-hxhim.png}\\
-  \caption{The HXHIM architecture.}
+  \caption{The MDHIM architecture.}
   \label{fig:arch-hxhim}
 \end{figure}
 
-% What is HXHIM
-HXHIM is a key-value store designed for HPC architectures and multi-dimensional
+% What is MDHIM
+MDHIM is a key-value store designed for HPC architectures and multi-dimensional
 data. It is based off MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the
 multi-dimensional indexing middleware. Figure~\ref{fig:arch-hxhim} has a crude
-sketch of the HXHIM architecture. Each MPI rank has an instance of the
+sketch of the MDHIM architecture. Each MPI rank has an instance of the
 application, which has the client library linked in. An MPI rank can also have
 a ``range server", which stores the key-value pairs in a local databse (either
 LevelDB or MySQL). Data is located with a consistent hash, which is
@@ -133,7 +133,7 @@ queries asking for a certain atmosphere can be serviced in O\(1\), consisting
 of one lookup in the pressure index and one lookup into the primary index.
 
 % Why is it tailored to HPC?
-HXHIM tailors its mechanisms and policies to HPC, showing improved performance
+MDHIM tailors its mechanisms and policies to HPC, showing improved performance
 over cloud-based key-value stores like Cassandra. It has cursor types for
 walking the key-value store, bulk operations for exploiting data locality,
 per-job server spawning, and pluggable backends for its local database and
@@ -141,29 +141,46 @@ network type (infiniband/RDMA). Its policies are flexible, supporting
 customized partitioning strategies and user-defined secondary indices. This
 allows the system to choose whether to send load to the client or server.
 
-\subsection{Comparing Mantle and HXHIM}
-\begin{figure}[tb]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-comparison.png}\\
-  \caption{Comparing the design goals and implementations of Mantle and HXHIM.}
-  \label{fig:arch-comparison}
-\end{figure}
+\subsection{Comparing Mantle and MDHIM}
+\begin{table*}
+\centering
+\begin{tabular}[tb]{ r | l | l | l | l }
+                       & 
+                       & \multicolumn{1}{c|}{\centering Both} 
+                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
+                       & \multicolumn{1}{c}{\centering MDHIM}
+                       \\\hline
+  workload   & characteristics     & small/frequent requests  & data access            & data management \\
+             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
+             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
+  system     & measure workload    & yes                      & directory temperature  & range server counts \\
+  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
+             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
+             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
+  migration  & interval            & configurable             & every 10 seconds       & every query \\
+  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
+  \multicolumn{5}{c}{}\\
+  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
+\end{tabular}
+\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
+\label{fig:arch-comparison}
+\end{table*}
 
 % Why are the designed for the same type of workload?
-The intersecting portions of Figure~\ref{arch-comparison} shows how Mantle and
-HXHIM have similar designs. The workloads are very similar as the the services
+The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
+MDHIM have similar designs. The workloads are very similar as the the services
 respond to small and frequent requests, which results in hot spots and flash
 crowds. As a result, popularity of the data, not the size, drives distribution
 in both systems. Both workloads also have data locality so the systems have
-mechanisms for leveraging requests with similar semantic meaning. Finally, the
+mechanisms for leveraging requests with similar semantic meaning.  Finally, the
 overall design of both systems is decentralized meaning that there is no
 centralized scheduler and each server has an inconsistent global view.
 
 % What are the challenges?
-Despite the similarities, integrating the Mantle API with HXHIM has both design
+Despite the similarities, integrating the Mantle API with MDHIM has both design
 and technical challenges. Mantle is reactive to the workload as opposed to
-HXHIM migrations, which are triggered based on the request type. As a result,
-Mantle has functionality for exchanging server 
-utilization (CPU, network, memory) and workload (tracks request types). HXHIM 
-% RESUME
+MDHIM migrations, which are triggered based on the request type. As a result,
+Mantle has functionality for exchanging server utilization (CPU, network,
+memory) and workload (tracks request types). MDHIM 
 
 
