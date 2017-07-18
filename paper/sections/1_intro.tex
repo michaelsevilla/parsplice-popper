@@ -35,26 +35,49 @@ key-value store, namely:
 \end{itemize}
 
 \begin{figure}[t]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/example.png}\\
-  \caption{For a multi-part query with locality, migrating for distribution
-  (solution 1) takes more RPCs while migrating for concentration (solution 2)
-  risks of overloading the client.}
-  \label{fig:example}
+  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
+  \caption{ParSplice is a ready-heavy HPC application where producers use a
+  database for consistency. Replacing the single-node database with HXHIM
+  improves performance with load balancing.
+  \label{fig:arch-parsplice}}
 \end{figure}
 
 % Why is HXHIM a good fit?
-To show the efficacy of this approach, we examine multi-part queries that have
-both a high computational footprint, which suggests distribution to avoid hot
-spots, and data locality, which alternatively encourages concentration so the
-system can use its functionality for secondary indices, bulk operations, and
-key redistribution.  The motivating example for this integration is finding the
-maximum value \(x\) of the neighbors in a mesh of another maximum value \(y\).
-For example, finding the highest temperatures of the neighbors of mesh cells
-with the highest pressure. Given that the hash is defined by mesh location,
-finding the highest pressure is one RPC per server.  Unfortunately, even
-with an index based on the maximum pressures, finding the highest temperatures
-for {\it neighboring} cells with the highest pressures requires an additional
-RPC per server. 
+To show the efficacy of this approach, we examine the ParSplice molecular
+dynamics simulation application shown in Figure~\ref{fig:arch-parsplice}.
+ParSplice uses a single-node database for consistency, where producers, \(P\),
+push and pull coordinates, \{\(x_i, y_i\)\}, based on the segments,
+\{\(s_i\)\}, assigned by the splicer, \(S\). In this paper, we replace the
+database with a distributed key-value store designed for HPC enjoy performance
+optimizations for:
+
+\begin{itemize}
+  \item \texttt{put()} because of the distributed sync and load balancing based on:
+  \begin{itemize}
+    \item lazy synchronization with tombstones and RPCs
+    \item strong synchronization with consensus and blocking
+  \end{itemize}
+  \item \texttt{get()} because of the load balancing
+\end{itemize}
+
+It has 4 phases:
+
+\begin{enumerate}
+
+  \item splicer (S) tells producers (P) to compute segments for state \(s_i\)
+
+  \item P's pull initial coordinates \{\(x_i, y_i\)\} from database
+
+  \item a P inserts completed coordinates for segment \(s_i\) into database and
+  S broadcasts next segment(s) \(s_j\) 
+
+  \item P's pull new segment coordinates \{\(x_j, y_j\)\}
+\end{enumerate}
+
+, which has both a high computational footprint and data locality.
+The former suggests distribution to avoid hot spots while the latter encourages
+concentration to leverage the database's secondary indeices, bulk operations,
+and key redistribution functionality. 
 
 % What can the API do?
 Specifically, the API helps us explore the space of solutions for these types
