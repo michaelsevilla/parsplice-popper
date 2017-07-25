@@ -9,8 +9,8 @@ port 8082 (e.g., `http://c220g2-011307.wisc.cloudlab.us:8082/dashboard`), click
 [
   {
     "target": [
-      "node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiWrite",
-      "node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiDelete"
+      "node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiWrite",
+      "node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiDelete"
     ],
     "lineMode": "connected",
     "title": "Database Writes",
@@ -18,20 +18,22 @@ port 8082 (e.g., `http://c220g2-011307.wisc.cloudlab.us:8082/dashboard`), click
   },
   {
     "target": [
-      "node-0.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-3.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user"
+      "node-0.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-2.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user"
     ],
     "title": "Splicer/DB/InMemoryDB CPU (user)",
-    "lineMode": "connected"
+    "drawNullAsZero": "true"
   },
   {
     "target": [
-      "node-4.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-5.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-6.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-7.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
-      "node-8.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.cputotals.user"
+      "node-3.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-4.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-5.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-6.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-7.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-8.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user",
+      "node-9.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.cputotals.user"
     ],
     "title": "Worker CPU (user)",
     "lineMode": "connected",
@@ -39,8 +41,8 @@ port 8082 (e.g., `http://c220g2-011307.wisc.cloudlab.us:8082/dashboard`), click
   },
   {
     "target": [
-      "node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiOpen",
-      "node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiGet"
+      "node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiOpen",
+      "node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.leveldb.ApiGet"
     ],
     "lineMode": "connected",
     "title": "Database Reads",
@@ -48,25 +50,29 @@ port 8082 (e.g., `http://c220g2-011307.wisc.cloudlab.us:8082/dashboard`), click
   },
   {
     "target": [
-      "scale(node-0.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-3.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-1.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)"
+      "scale(node-0.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-1.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-2.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)"
     ],
     "title": "Splicer/DB/InMemoryDB Memory (used)",
     "hideLegend": "false",
-    "drawNullAsZero": "true"
+    "drawNullAsZero": "false",
+    "areaMode": "first"
   },
   {
     "target": [
-      "scale(node-4.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-5.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-6.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-7.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
-      "scale(node-8.msevilla-qv27256.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)"
+      "scale(node-3.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-4.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-5.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-6.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-7.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-8.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)",
+      "scale(node-9.msevilla-qv27375.cephfs-pg0.wisc.cloudlab.us.meminfo.used,1024)"
     ],
     "title": "Worker Memory (used)",
     "hideLegend": "true",
     "lineMode": "connected"
   }
 ]
+
 ```

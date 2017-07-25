@@ -5,6 +5,6 @@ set -e
 
 # prepare output directory
 sudo rm -fr results || true
-$DOCKER $ARGS ansible/cleanup.yml ansible/monitor.yml
+$DOCKER $ARGS ansible/cleanup.yml
 
-eit 0
+exit 0

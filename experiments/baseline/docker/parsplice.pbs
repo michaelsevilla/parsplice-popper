@@ -1,0 +1,4 @@
+#!/bin/sh
+#testpbs
+
+mpirun -np 8 --hostfile /tmp/mpihosts --output-filename out/p --allow-run-as-root /root/parsplice

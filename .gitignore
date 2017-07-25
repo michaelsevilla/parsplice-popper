@@ -1,2 +1,4 @@
-.ssh/
-src/
+.DS_Store
+.ipynb_checkpoints/
+tmp/
+*.pyc
