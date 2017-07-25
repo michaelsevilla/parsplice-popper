@@ -1,4 +1,7 @@
 #!/bin/bash
 
 set -ex
-time ./run.sh mpiclient,mpiserver -m shell -a "docker pull piha.soe.ucsc.edu:5000/parsplice"
+LOGIN="docker login --password $DOCKER_PASSWORD --username mikesevilla3 registry.gitlab.com"
+DPULL="docker pull registry.gitlab.com/mikesevilla3/parsplice"
+cd .. 
+time ./run.sh mpiclient,mpiserver -m shell -a "$LOGIN && $DPULL"

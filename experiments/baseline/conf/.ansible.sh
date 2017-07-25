@@ -11,5 +11,3 @@ WORK=""
 ARGS="--forks 50"
 VARS="-i conf/ansiblehosts -e @conf/vars.yml"
 DOCKER="docker run -it --rm $NETW $DIRS $ANSB $CODE $WORK michaelsevilla/ansible $VARS"
-
-

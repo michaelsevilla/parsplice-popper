@@ -1,13 +1,21 @@
 ---
 SSHD_PORT: 2222
+net_interface: "eth2:0"
+MPIRUN_FLAGS: '-np 5
+               --oversubscribe
+               -output-filename out/p
+               -mca btl_tcp_if_include {{ net_interface }}
+               -mca oob_tcp_if_include {{ net_interface }}
+               -mca btl self,tcp'
+parsplice_img: "registry.gitlab.com/mikesevilla3/parsplice"
 
 # how long (minutes) to run simulation
-simulation_time: 240
+simulation_time: 60
 
 # graphite
 webui_port: 8082
 
 # metric collection
 collectl_args: "-scmn -i 10"
-graphite_args: "-g 192.168.140.2 -p 2003"
+graphite_args: "-g node-0 -p 2003"
 level_db_args: "-d 10"

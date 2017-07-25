@@ -9,53 +9,58 @@ directions, you can set up ParSplice on CloudLab.
 
 ## Check Out Nodes
 
-Using the [CephFS Profile](https://www.cloudlab.us/p/CephFS/mikecephfs),
-instantiate a cluster with at least 4 nodes on CloudLab. That profile has
-Ubuntu images with Docker installed.  After you get your nodes, you can use my
-convenience script to push your SSH keys:
+Using the [Docker MPI] Profile instantiate a cluster with at least 4 nodes on
+CloudLab. That profile has Ubuntu images with Docker installed.  After you get
+your nodes, you can use my convenience script to push your SSH keys:
+
+[Docker MPI]: https://www.cloudlab.us/p/221d1125-6f4e-11e7-ac8f-90e2ba22fee4
 
 ```bash
-wget https://gitlab.com/mikesevilla3/parsplice/blob/trinitite/deploy/pushkeys.sh
+wget https://raw.githubusercontent.com/michaelsevilla/parsplice-popper/cloudlab/experiments/baseline/cloudlab/pushkeys.sh
 vim pushkeys.sh
 ./pushkeys
 ```
 
 ## Grabbing Deploy Code
 
-Log into the head node and grab the ParSplice code:
+Log into the head node and setup git:
 
 ```bash
 git config --global user.email "mikesevilla3@gmail.com"
 git config --global user.name "Michael Sevilla"
 git config --global core.editor "vim"
-git clone https://gitlab.com/mikesevilla3/parsplice.git
-cd parsplice; git checkout cloudlab; git submodule update --init --recursive 
 ```
+
+You also need to install GIT LFS because that is how we store results.
+Directions are [here](https://github.com/git-lfs/git-lfs/wiki/Installation).
+If you do not plan on committing results back into this repo, you can skip this
+step. Now you can grab the ParSplice code:
+
+```bash
+GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/michaelsevilla/parsplice-popper.git
+cd parsplice-popper; git checkout cloudlab; git submodule update --init --recursive 
+```
+
+The `GIT_LFS_SKIP_SMUDGE` flag avoids downloading results files from prior runs. 
 
 ## Sanity Check the CloudLab Cluster
 
 Make sure you can reach all nodes (i.e. your `./pushkeys.sh` invocation worked):
 
 ```bash
-cd parsplice/deploy
+cd experiments/baseline/
 vim conf/ansiblehosts
-./run.sh --forks 1 all -m ping 
+./run.sh all -m ping 
 ```
 
 Also make sure that all NICs have the same names:
 
 ```bash
-./run.sh --forks 1 all -m shell -a "ifconfig | grep eth3 -A1"
+./run.sh all -m shell -a "ifconfig | grep eth2:0 -A1"
 ```
 
-If some of your nodes do not have `eth3` defined, log in and execute:
-
-```bash
-sudo /etc/init.d/networking restart
-sudo reboot
-```
-
-Repeat until you get the NICs you want.
+If some of your nodes do not have `eth2:0` defined, set the alias using the
+commands from the CloudLab [install.sh](cloudlab/install/install.sh) script.
 
 ## Building a ParSplice Image
 To avoid `apt-get` installing everything on all the nodes, we build a Docker
@@ -63,7 +68,7 @@ image and pull it from every node. This image will have all the source code and
 binaries for ParSplice
 
 ```bash
-cd deploy/docker
+cd experiments/baseline/docker
 vim build.sh
 ```
 
@@ -98,28 +103,29 @@ pull the image. This script will pull a Docker image with Ansible, a scripting
 language that basically does bash on multiple nodes:
 
 ```bash
+cd experiments/baseline/ansible
 DOCKER_PASSWORD=<YOUR PASSWORD> ./repull.sh
 ```
 
 Next, modify your configurations:
 
 ```bash
-vim conf/vars.yml conf/mpihosts
+cd ../conf
+vim vars.yml mpihosts
 ```
 
 Also setup your LAMMPS configurations:
 
 ```bash
-sed -i "s/<SocketsPerNode> 1 <\/SocketsPerNode>/<SocketsPerNode> 36 <\/SocketsPerNode>/g" conf/ps-config/*
-sed -i "s/<NWorkers> 1 <\/NWorkers>/<NWorkers> 2 <\NWorkers>/g" conf/ps-config/*
+sed -i "s/<SocketsPerNode> 1 <\/SocketsPerNode>/<SocketsPerNode> 36 <\/SocketsPerNode>/g" ps-config/*
+sed -i "s/<NWorkers> 1 <\/NWorkers>/<NWorkers> 2 <\NWorkers>/g" ps-config/*
 ```
 
 Finally, set up your MPI ranks and run!
 
 ```bash
-cd conf
-SLURM_NODELIST=node-[0,1,2,3,4,5,6,7,8] python ../../node-affinity/mkhosts-slurm.py 36 2
-cd parsplice/deploy
+SLURM_NODELIST=node-[0,1,2,3,4,5,6,7,8] python ../ansible/mkhosts-slurm.py 36 2
+cd ..
 ./run.sh
 ```
 

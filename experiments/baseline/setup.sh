@@ -10,4 +10,6 @@ for h in `cat conf/mpihosts | awk '{print $1}'`; do
   mkdir results/$h
 done
 
+$DOCKER $ARGS ansible/monitor.yml
+
 exit 0
