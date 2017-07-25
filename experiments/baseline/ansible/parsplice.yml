@@ -35,7 +35,7 @@
         -v /tmp/parsplice.hosts.1:/root/hosts.1 \
         -v /tmp/parsplice.hosts.2:/root/hosts.2 \
         -e SSHD_PORT="{{ SSHD_PORT }}" \
-        piha.soe.ucsc.edu:5000/parsplice
+        {{ parsplice_img }}
 
   - name: create shared memory pointer for dump to latch onto
     shell: docker exec parsplice /sample/sample
@@ -63,9 +63,13 @@
         -e SSHD_PORT="{{ SSHD_PORT }}" \
         -w /root/ \
         --entrypoint=/bin/bash \
-        piha.soe.ucsc.edu:5000/parsplice
-  - shell: docker exec parsplice entrypoint.sh "qsub parsplice.pbs"
-  - shell: docker exec parsplice qrun 0
+        {{ parsplice_img }}
+
+  - name: this is a hack because I cannot get pbs to work on cloudlab
+    shell: >
+      docker exec parsplice mpiexec \
+        --allow-run-as-root --mca plm_rsh_args "-p {{ SSHD_PORT }}" --hostfile /tmp/mpihosts \
+        {{ MPIRUN_FLAGS }} /root/parsplice &
 
   - name: wait for rank 0 to start
     pause: seconds=10
