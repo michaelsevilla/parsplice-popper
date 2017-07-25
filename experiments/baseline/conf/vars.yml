@@ -1,0 +1,13 @@
+---
+SSHD_PORT: 2222
+
+# how long (minutes) to run simulation
+simulation_time: 240
+
+# graphite
+webui_port: 8082
+
+# metric collection
+collectl_args: "-scmn -i 10"
+graphite_args: "-g 192.168.140.2 -p 2003"
+level_db_args: "-d 10"

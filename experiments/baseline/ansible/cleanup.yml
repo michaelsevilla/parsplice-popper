@@ -1,0 +1,22 @@
+---
+
+- hosts: mpiserver, mpiclient
+  become: True
+  tasks:
+    - shell: docker {{ item.0 }} {{ item.1 }}
+      ignore_errors: True
+      with_nested:
+      - ["stop", "rm"]
+      - ["parsplice", "collectl"]
+    - file: path=/tmp/mpihosts state=absent
+    - file: path=/tmp/leveldb_metrics state=absent
+    - shell: rm -fr /tmp/parsplice*
+      ignore_errors: True
+
+- hosts: graphite
+  tasks:
+    - shell: docker {{ item.0 }} {{ item.1 }}
+      ignore_errors: True
+      with_nested:
+      - ["stop", "rm"]
+      - ["graphite"]

@@ -1,3 +1,6 @@
 [submodule "paper/biblio"]
 	path = paper/biblio
 	url = https://github.com/michaelsevilla/biblio.git
+[submodule "experiments/baseline/ansible/roles/srl-roles"]
+	path = experiments/baseline/ansible/roles/srl-roles
+	url = https://github.com/systemslab/srl-roles.git

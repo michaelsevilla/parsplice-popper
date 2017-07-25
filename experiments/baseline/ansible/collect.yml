@@ -1,0 +1,49 @@
+---
+
+- hosts: graphite
+  become: True
+  tasks: 
+    - name: copy the data into a spot where we can grab it
+      shell: docker exec graphite cp -r /opt/graphite/storage/whisper/ /tmp/graphite
+
+    - name: figure out which nodes we have
+      shell: ls /tmp/graphite/whisper | grep -v "carbon" | grep -v "tar.gz"
+      register: result
+
+    - name: tar it
+      shell: tar czf /tmp/graphite/whisper/{{ item }}.tar.gz /tmp/graphite/whisper/{{ item }}
+      with_items: 
+        - "{{ result.stdout_lines }}"
+    
+    - name: get those tars
+      fetch: src=/tmp/graphite/whisper/{{ item }}.tar.gz dest={{ playbook_dir|dirname }}/results/{{ item }}_utilization.tar.gz flat=yes
+      with_items:
+        - "{{ result.stdout_lines }}" 
+
+- hosts: mpiclient
+  become: True
+  tasks:
+    - name: partial results are in the container
+      shell: docker exec parsplice cat {{ item }} > /tmp/{{ item }}
+      with_items:
+        - "times.out"
+        - "traj.out"
+
+    - name: fetch, fido
+      fetch: src=/tmp/{{ item }} dest={{ playbook_dir|dirname }}/results/{{ item }} flat=yes
+      with_items:
+        - "times.out"
+        - "traj.out"
+
+- hosts: mpiclient,mpiserver
+  become: True
+  tasks:
+    - name: stop parsplice to prevent them from continuing to write to the logs
+      shell: docker stop parsplice
+      ignore_errors: true
+    - shell: docker rm parsplice
+      ignore_errors: true
+
+    - name: tar up the logs
+      shell: tar czf /tmp/parsplice-logs.tar.gz /tmp/parsplice-logs/
+    - fetch: src=/tmp/parsplice-logs.tar.gz dest={{ playbook_dir|dirname }}/results/{{ ansible_hostname }}/parsplice-logs.tar.gz flat=yes
