@@ -1,15 +1,18 @@
 #!/bin/bash
 
-# cleanup
-rm -fr src /tmp/parsplice/ >> /dev/null 2>&1
-mkdir src
+#IMG="piha.soe.ucsc.edu:5000/parsplice"
+IMG="registry.gitlab.com/mikesevilla3/parsplice"
+
+set -ex
 
 # setup by copying keys and source code (not deploy code)
-cp -r ~/.ssh .
-for i in `ls ../../ | grep -v deploy`; do
-  cp -r ../../$i src/$i
-done
+if [ ! -d "src" ]; then
+  git clone https://gitlab.com/mikesevilla3/parsplice.git src
+  cd src; git checkout trinitite-nanoparticle; cd -
+fi
 
 # launch a dev container
-set -ex
-docker build -t piha.soe.ucsc.edu:5000/parsplice .
+cp -r ~/.ssh .
+docker build -t $IMG .
+set +x
+echo -e "\nCreated $IMG\n"
