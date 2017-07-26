@@ -20,6 +20,12 @@
   - copy:
       src:  "{{ playbook_dir|dirname }}/conf/hosts.2"
       dest: "/tmp/parsplice.hosts.2"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/nano/input.lammps"
+      dest: "/tmp/input.lammps"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/nano/voter-pt.eam"
+      dest: "/tmp/voter-pt.eam"
 
 - hosts: mpiserver
   tasks:
@@ -31,6 +37,8 @@
         -v /tmp/parsplice-logs/:/root/out \
         -v /tmp/leveldb_metrics:/tmp/leveldb_metrics \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
+        -v /tmp/input.lammps:/root/input.lammps \
+        -v /tmp/voter-pt.eam:/root/voter-pt.eam \
         -v /tmp/parsplice.hosts:/root/hosts \
         -v /tmp/parsplice.hosts.1:/root/hosts.1 \
         -v /tmp/parsplice.hosts.2:/root/hosts.2 \
@@ -54,6 +62,8 @@
         -v /tmp/parsplice-logs/:/root/out \
         -v /tmp/parsplice-results/:/results \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
+        -v /tmp/input.lammps:/root/input.lammps \
+        -v /tmp/voter-pt.eam:/root/voter-pt.eam \
         -v /tmp/parsplice.pbs:/root/parsplice.pbs \
         -v /tmp/parsplice.hosts:/root/hosts \
         -v /tmp/parsplice.hosts.1:/root/hosts.1 \

@@ -11,16 +11,16 @@ if [ ! -z $1 ]; then
   exit
 fi
 
-# do a parameter sweep
-for c in "t2000it400.xml" "t400it2000.xml" "t1000it2000.xml"; do
-
-  # run the job
-  ./teardown.sh
-  ./setup.sh
-  $DOCKER $ARGS -e config="$c" ansible/parsplice.yml ansible/collect.yml
-
-  # grab configuration and save results
-  cp conf/ps-config/$c results/ps-config.xml
-  mv results results-$c-dbfix
+# do a repeatability sweep
+for i in `seq 0 2`; do
+  for c in "nano.xml"; do
+  
+    ./teardown.sh
+    ./setup.sh
+  
+    # run the actual job
+    $DOCKER $ARGS -e config="$c" ansible/parsplice.yml ansible/collect.yml
+    mv results results-$c-run$i
+  done
 done
 exit 0

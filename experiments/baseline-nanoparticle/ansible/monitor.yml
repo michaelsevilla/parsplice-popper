@@ -1,0 +1,7 @@
+- hosts: graphite
+  roles: 
+    - monitor/graphite
+
+- hosts: mpiclient, mpiserver
+  roles:
+    - monitor/collectl

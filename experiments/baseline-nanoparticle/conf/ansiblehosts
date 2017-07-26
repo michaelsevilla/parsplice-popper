@@ -1,0 +1,16 @@
+[mpiserver]
+node-1 ansible_user=msevilla
+node-2 ansible_user=msevilla
+node-3 ansible_user=msevilla
+node-4 ansible_user=msevilla
+node-5 ansible_user=msevilla
+node-6 ansible_user=msevilla
+node-7 ansible_user=msevilla
+node-8 ansible_user=msevilla
+node-9 ansible_user=msevilla
+
+[mpiclient]
+node-0 ansible_user=msevilla
+
+[graphite]
+node-0 ansible_user=msevilla
