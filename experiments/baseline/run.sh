@@ -21,6 +21,7 @@ for c in "t2000it400.xml" "t400it2000.xml" "t1000it2000.xml"; do
 
   # grab configuration and save results
   cp conf/ps-config/$c results/ps-config.xml
-  mv results results-$c-dbfix
+  sleep 1
+  mv results results-$c-scaletemp
 done
 exit 0

@@ -10,7 +10,7 @@ MPIRUN_FLAGS: '-np 5
 parsplice_img: "registry.gitlab.com/mikesevilla3/parsplice"
 
 # how long (minutes) to run simulation
-simulation_time: 60
+simulation_time: 30
 
 # graphite
 webui_port: 8082

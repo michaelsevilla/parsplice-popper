@@ -20,7 +20,7 @@ for i in `seq 0 2`; do
   
     # run the actual job
     $DOCKER $ARGS -e config="$c" ansible/parsplice.yml ansible/collect.yml
-    mv results results-$c-run$i
+    mv results results-$c-run$i-rerun
   done
 done
 exit 0

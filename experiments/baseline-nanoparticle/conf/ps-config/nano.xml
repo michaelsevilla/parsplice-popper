@@ -63,7 +63,7 @@
 <Topology>
 <WorkersPerManager> 2 </WorkersPerManager>
 <RanksPerWorker> 1 </RanksPerWorker>
-<SocketsPerNode> 48 </SocketsPerNode>
+<SocketsPerNode> 36 </SocketsPerNode>
 </Topology>
 
 <InitialConfiguration> ./input.lammps    </InitialConfiguration>
