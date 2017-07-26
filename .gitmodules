@@ -4,3 +4,6 @@
 [submodule "experiments/baseline/ansible/roles/srl-roles"]
 	path = experiments/baseline/ansible/roles/srl-roles
 	url = https://github.com/systemslab/srl-roles.git
+[submodule "experiments/baseline-nanoparticle/ansible/roles/srl-roles"]
+	path = experiments/baseline-nanoparticle/ansible/roles/srl-roles
+	url = https://github.com/systemslab/srl-roles.git

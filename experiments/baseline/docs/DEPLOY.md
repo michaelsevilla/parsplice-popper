@@ -118,7 +118,7 @@ Also setup your LAMMPS configurations:
 
 ```bash
 sed -i "s/<SocketsPerNode> 1 <\/SocketsPerNode>/<SocketsPerNode> 36 <\/SocketsPerNode>/g" ps-config/*
-sed -i "s/<NWorkers> 1 <\/NWorkers>/<NWorkers> 2 <\NWorkers>/g" ps-config/*
+sed -i "s/<NWorkers> 1 <\/NWorkers>/<NWorkers> 2 <\/NWorkers>/g" ps-config/*
 ```
 
 Finally, set up your MPI ranks and run!

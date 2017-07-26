@@ -1,0 +1,104 @@
+---
+
+- hosts: mpiserver, mpiclient
+  tasks:
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/leveldb_metrics"
+      dest: "/tmp/leveldb_metrics"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/ps-config/{{ config }}"
+      dest: "/tmp/ps-config.xml"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/parsplice.pbs"
+      dest: "/tmp/parsplice.pbs"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/hosts"
+      dest: "/tmp/parsplice.hosts"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/hosts.1"
+      dest: "/tmp/parsplice.hosts.1"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/hosts.2"
+      dest: "/tmp/parsplice.hosts.2"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/nano/input.lammps"
+      dest: "/tmp/input.lammps"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/nano/voter-pt.eam"
+      dest: "/tmp/voter-pt.eam"
+
+- hosts: mpiserver
+  tasks:
+  - shell: >
+      docker run -d \
+        --name parsplice \
+        --privileged \
+        --net host \
+        -v /tmp/parsplice-logs/:/root/out \
+        -v /tmp/leveldb_metrics:/tmp/leveldb_metrics \
+        -v /tmp/ps-config.xml:/root/input/ps-config.xml \
+        -v /tmp/input.lammps:/root/input.lammps \
+        -v /tmp/voter-pt.eam:/root/voter-pt.eam \
+        -v /tmp/parsplice.hosts:/root/hosts \
+        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
+        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
+        -e SSHD_PORT="{{ SSHD_PORT }}" \
+        {{ parsplice_img }}
+
+  - name: create shared memory pointer for dump to latch onto
+    shell: docker exec parsplice /sample/sample
+
+- hosts: mpiclient
+  tasks:
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/mpihosts"
+      dest: "/tmp/mpihosts"
+  - shell: >
+      docker run -dit \
+        --name parsplice \
+        --privileged \
+        --net host \
+        -v /tmp/mpihosts:/tmp/mpihosts \
+        -v /tmp/parsplice-logs/:/root/out \
+        -v /tmp/parsplice-results/:/results \
+        -v /tmp/ps-config.xml:/root/input/ps-config.xml \
+        -v /tmp/input.lammps:/root/input.lammps \
+        -v /tmp/voter-pt.eam:/root/voter-pt.eam \
+        -v /tmp/parsplice.pbs:/root/parsplice.pbs \
+        -v /tmp/parsplice.hosts:/root/hosts \
+        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
+        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
+        -e RANK0=1 \
+        -e WAIT_SSHD_SECS=5 \
+        -e SSHD_PORT="{{ SSHD_PORT }}" \
+        -w /root/ \
+        --entrypoint=/bin/bash \
+        {{ parsplice_img }}
+
+  - name: this is a hack because I cannot get pbs to work on cloudlab
+    shell: >
+      docker exec parsplice mpiexec \
+        --allow-run-as-root --mca plm_rsh_args "-p {{ SSHD_PORT }}" --hostfile /tmp/mpihosts \
+        {{ MPIRUN_FLAGS }} /root/parsplice &
+
+  - name: wait for rank 0 to start
+    pause: seconds=10
+
+- hosts: mpiclient,mpiserver
+  tasks:
+  - name: check if we are running a persistent DB
+    shell: docker exec parsplice ls /root | grep db0
+    register: result
+    ignore_errors: True
+
+  - name: start db monitor if we are running a persistent db
+    shell: docker exec parsplice /myleveldb/perf_dump {{ level_db_args }} {{ graphite_args }} -f /tmp/leveldb_metrics &
+    when: result.rc == 0
+
+  - name: start db monitor if we are running a persistent db
+    shell: docker exec parsplice /bin/bash -c "/leveldb/perf_dump {{ level_db_args }} -h >> /root/out/perf.diff" &
+    when: result.rc == 0
+
+- hosts: mpiclient
+  tasks:
+  - pause: minutes={{ simulation_time }}
