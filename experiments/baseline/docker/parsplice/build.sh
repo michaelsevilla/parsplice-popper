@@ -1,15 +1,21 @@
 #!/bin/bash
 
-# cleanup
-rm -fr src /tmp/parsplice/ >> /dev/null 2>&1
-mkdir src
+# name of the final image
+IMG="piha.soe.ucsc.edu:5000/parsplice"
+
+# don't pull results on git lfs
+export GIT_LFS_SKIP_SMUDGE=1
+
+set -ex
+if [ ! -d src ]; then
+  git clone https://gitlab.com/mikesevilla3/parsplice.git src
+  cd src; git checkout trinitite-uo2; cd -
+fi
 
 # setup by copying keys and source code (not deploy code)
 cp -r ~/.ssh .
-for i in `ls ../../ | grep -v deploy`; do
-  cp -r ../../$i src/$i
-done
 
 # launch a dev container
-set -ex
-docker build -t piha.soe.ucsc.edu:5000/parsplice .
+docker build -t $IMG .
+set +ex
+echo "DONE creating image named $IMG"

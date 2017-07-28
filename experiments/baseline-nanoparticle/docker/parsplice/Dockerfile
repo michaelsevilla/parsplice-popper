@@ -80,30 +80,6 @@ RUN git clone https://rjzamora:Phishy_217@gitlab.com/exaalt/lammps.git /usr/loca
     mkdir /usr/local/include/lammps && \
     cp /usr/local/lammps/src/*.h /usr/local/include/lammps/.
 
-# install parsplice
-ENV COMPILER     "mpic++"
-ENV local_PREFIX /usr/local/
-ENV super_PREFIX /usr/
-ENV bldir_PREFIX /builds/exaalt/parsplice/build/
-ENV latte_PATH   /usr/local/LATTE
-ADD src /parsplice
-RUN cd /parsplice && \
-    mkdir build && \
-    cd build && \
-    cmake \
-      -DCMAKE_INCLUDE_PATH=${local_PREFIX}/include/:${global_PREFIX}/include/:/usr/include \
-      -DCMAKE_BINARY_DIR=${bldir_PREFIX} \
-      -DEXTRA_FLAGS="-I${latte_PATH}/src -I/leveldb -I/leveldb/include" \
-      -DEXTRA_LINK_FLAGS="-fopenmp ${latte_PATH}/src/latte_c_bind.o ${latte_PATH}/liblatte.a -lgfortran  -llapack -lblas -lleveldb -L/leveldb" \
-      -DCMAKE_LIBRARY_PATH=${local_PREFIX}/lib:${global_PREFIX}/lib/:/leveldb \
-      -DCMAKE_CXX_COMPILER=${COMPILER} \
-      -DCMAKE_INSTALL_PREFIX=/root \
-      /parsplice && \
-    make && \
-    make install && \
-    cp -r /parsplice/sample-input/UO2/* /root/ && \
-    ldconfig
-
 # make this container deployable with SSH (based on ivotron/openmpi:v2.0.2)
 ADD .ssh /root/.ssh
 RUN mkdir -p /var/run/sshd && \
@@ -126,6 +102,30 @@ RUN git clone https://github.com/michaelsevilla/leveldb.git /myleveldb && \
     git checkout graphite && \
     make && \
     make tools
+
+# install parsplice
+ENV COMPILER     "mpic++"
+ENV local_PREFIX /usr/local/
+ENV super_PREFIX /usr/
+ENV bldir_PREFIX /builds/exaalt/parsplice/build/
+ENV latte_PATH   /usr/local/LATTE
+ADD src /parsplice
+RUN cd /parsplice && \
+    mkdir build && \
+    cd build && \
+    cmake \
+      -DCMAKE_INCLUDE_PATH=${local_PREFIX}/include/:${global_PREFIX}/include/:/usr/include \
+      -DCMAKE_BINARY_DIR=${bldir_PREFIX} \
+      -DEXTRA_FLAGS="-I${latte_PATH}/src -I/leveldb -I/leveldb/include" \
+      -DEXTRA_LINK_FLAGS="-fopenmp ${latte_PATH}/src/latte_c_bind.o ${latte_PATH}/liblatte.a -lgfortran  -llapack -lblas -lleveldb -L/leveldb" \
+      -DCMAKE_LIBRARY_PATH=${local_PREFIX}/lib:${global_PREFIX}/lib/:/leveldb \
+      -DCMAKE_CXX_COMPILER=${COMPILER} \
+      -DCMAKE_INSTALL_PREFIX=/root \
+      /parsplice && \
+    make -j24 && \
+    make install && \
+    cp -r /parsplice/sample-input/UO2/* /root/ && \
+    ldconfig
 
 ADD entrypoint.sh /usr/bin
 RUN chmod 750 /usr/bin/entrypoint.sh

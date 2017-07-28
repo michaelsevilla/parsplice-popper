@@ -2,3 +2,5 @@
 .ipynb_checkpoints/
 tmp*/
 *.pyc
+*.ssh
+src/
