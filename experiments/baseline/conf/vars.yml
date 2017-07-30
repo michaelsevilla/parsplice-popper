@@ -7,7 +7,7 @@ MPIRUN_FLAGS: '-np 5
                -mca btl_tcp_if_include {{ net_interface }}
                -mca oob_tcp_if_include {{ net_interface }}
                -mca btl self,tcp'
-parsplice_img: "registry.gitlab.com/mikesevilla3/parsplice"
+parsplice_img: "piha.soe.ucsc.edu:5000/parsplice"
 
 # how long (minutes) to run simulation
 simulation_time: 30
@@ -17,5 +17,5 @@ webui_port: 8082
 
 # metric collection
 collectl_args: "-scmn -i 10"
-graphite_args: "-g node-0 -p 2003"
+graphite_args: "-g 192.168.140.85 -p 2003"
 level_db_args: "-d 10"
