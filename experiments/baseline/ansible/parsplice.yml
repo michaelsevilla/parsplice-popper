@@ -63,13 +63,9 @@
         -e SSHD_PORT="{{ SSHD_PORT }}" \
         -w /root/ \
         --entrypoint=/bin/bash \
-        {{ parsplice_img }}
-
-  - name: this is a hack because I cannot get pbs to work on cloudlab
-    shell: >
-      docker exec parsplice mpiexec \
-        --allow-run-as-root --mca plm_rsh_args "-p {{ SSHD_PORT }}" --hostfile /tmp/mpihosts \
-        {{ MPIRUN_FLAGS }} /root/parsplice &
+        {{ parsplice_img }} 
+  - shell: docker exec parsplice entrypoint.sh "qsub parsplice.pbs"
+  - shell: docker exec parsplice qrun 0
 
   - name: wait for rank 0 to start
     pause: seconds=10

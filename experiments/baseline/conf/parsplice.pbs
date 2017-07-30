@@ -3,13 +3,13 @@
 #SBATCH --time=04:00:00
 
 mpiexec \
-  --oversubscribe \
   --allow-run-as-root \
-  -np 4 \
+  --mca plm_rsh_args "-p 2222" \
+  --oversubscribe \
+  -np 5 \
+  --output-filename out/p \
   -mca btl_tcp_if_include eth1 \
   -mca oob_tcp_if_include eth1 \
   -mca btl self,tcp \
-  --mca plm_rsh_args "-p 2222" \
   --hostfile /tmp/mpihosts \
-  --output-filename out/p \
   /root/parsplice
