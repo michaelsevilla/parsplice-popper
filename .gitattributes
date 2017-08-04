@@ -1,3 +1,1 @@
-experiments/baseline/results-10hrs/** filter=lfs diff=lfs merge=lfs -text
-experiments/baseline/results-2hrs/** filter=lfs diff=lfs merge=lfs -text
-experiments/baseline/results-archive/** filter=lfs diff=lfs merge=lfs -text
+
