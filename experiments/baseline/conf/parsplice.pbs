@@ -1,12 +1,12 @@
 #!/bin/sh
 #SBATCH -N 100
-#SBATCH --time=04:00:00
-
+#SBATCH --time=01:00:00
+export RANKS=`wc -l layout | awk '{print $1}' `
 mpiexec \
   --allow-run-as-root \
   --mca plm_rsh_args "-p 2222" \
   --oversubscribe \
-  -np 5 \
+  -np $RANKS \
   --output-filename out/p \
   -mca btl_tcp_if_include eth1 \
   -mca oob_tcp_if_include eth1 \

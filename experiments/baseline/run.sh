@@ -3,7 +3,7 @@
 # the experiment. Any non-zero exit code will be interpreted as a failure
 # by the 'popper check' command.
 source conf/.ansible.sh
-set -e
+set -ex
 
 # this script doubles as an Ansible commandline program
 if [ ! -z $1 ]; then
@@ -12,16 +12,19 @@ if [ ! -z $1 ]; then
 fi
 
 # do a parameter sweep
-for c in "t2000it400.xml" "t400it2000.xml" "t1000it2000.xml"; do
+mkdir results-parmsweep-keyspace || true
+for c in "t1000it2000" "t400it2000" "t700it2000" "t2000it4000" "t400it4000" "t1200it4000"; do
+  for run in 0; do
 
-  # run the job
-  ./teardown.sh
-  ./setup.sh
-  $DOCKER $ARGS -e config="$c" ansible/parsplice.yml ansible/collect.yml
+    # run the job
+    ./teardown.sh
+    ./setup.sh
+    $DOCKER $ARGS -e config="${c}.xml" ansible/parsplice.yml ansible/collect.yml
 
-  # grab configuration and save results
-  cp conf/ps-config/$c results/ps-config.xml
-  sleep 1
-  mv results results-$c-scaletemp
+    # grab configuration and save results
+    cp conf/ps-config/${c}.xml results/ps-config.xml
+    sleep 1
+    mv results results-parmsweep-keyspace/$c-run$run
+  done
 done
 exit 0

@@ -1,16 +1,16 @@
 ---
 SSHD_PORT: 2222
-net_interface: "eth2:0"
+net_interface: "eth1"
 MPIRUN_FLAGS: '-np 5
                --oversubscribe
                -output-filename out/p
                -mca btl_tcp_if_include {{ net_interface }}
                -mca oob_tcp_if_include {{ net_interface }}
                -mca btl self,tcp'
-parsplice_img: "piha.soe.ucsc.edu:5000/parsplice"
+parsplice_img: "piha.soe.ucsc.edu:5000/parsplice:nospawn"
 
 # how long (minutes) to run simulation
-simulation_time: 30
+simulation_time: 60
 
 # graphite
 webui_port: 8082

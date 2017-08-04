@@ -172,7 +172,7 @@ velocity    all create %InitTemperature%  %RANDU% dist gaussian
 <Timestep> 0.001 </Timestep>
 <Temperature> 400 </Temperature>
 <!-- Temperature at which to resample velocities when starting cold -->
-<InitTemperature> 2000 </InitTemperature>
+<InitTemperature> 4000 </InitTemperature>
 <Friction> 1 </Friction>
 </TaskParameter>
 

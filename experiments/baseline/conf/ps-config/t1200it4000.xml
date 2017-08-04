@@ -170,9 +170,9 @@ velocity    all create %InitTemperature%  %RANDU% dist gaussian
 <Tolerance> 1e-8 </Tolerance>
 <!-- MD timestep, in whatever units the MD engine uses -->
 <Timestep> 0.001 </Timestep>
-<Temperature> 400 </Temperature>
+<Temperature> 1200 </Temperature>
 <!-- Temperature at which to resample velocities when starting cold -->
-<InitTemperature> 2000 </InitTemperature>
+<InitTemperature> 4000 </InitTemperature>
 <Friction> 1 </Friction>
 </TaskParameter>
 
