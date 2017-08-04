@@ -6,7 +6,6 @@ issdm-15 ansible_ssh_user=issdm
 issdm-18 ansible_ssh_user=issdm
 issdm-24 ansible_ssh_user=issdm
 issdm-27 ansible_ssh_user=issdm
-issdm-45 ansible_ssh_user=issdm
 
 [mpiclient]
 issdm-0 ansible_ssh_user=issdm

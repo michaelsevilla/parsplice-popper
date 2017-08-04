@@ -49,11 +49,11 @@
 
 <Topology>
 <!-- Estimated number of workers.  The actual number is controlled the two entries below and the number of nodes requested at run time.  -->
-<NWorkers> 1 </NWorkers>
+<NWorkers> 2 </NWorkers>
 <!-- Number of MPI rank to use for each worker -->
 <RanksPerWorker> 1 </RanksPerWorker>
 <!-- Number of cores per nodes -->
-<SocketsPerNode> 1 </SocketsPerNode>
+<SocketsPerNode> 4 </SocketsPerNode>
 </Topology>
 
 

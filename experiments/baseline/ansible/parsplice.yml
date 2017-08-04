@@ -12,14 +12,11 @@
       src:  "{{ playbook_dir|dirname }}/conf/parsplice.pbs"
       dest: "/tmp/parsplice.pbs"
   - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/layout"
+      dest: "/tmp/layout"
+  - copy:
       src:  "{{ playbook_dir|dirname }}/conf/hosts"
-      dest: "/tmp/parsplice.hosts"
-  - copy:
-      src:  "{{ playbook_dir|dirname }}/conf/hosts.1"
-      dest: "/tmp/parsplice.hosts.1"
-  - copy:
-      src:  "{{ playbook_dir|dirname }}/conf/hosts.2"
-      dest: "/tmp/parsplice.hosts.2"
+      dest: "/tmp/mpihosts"
 
 - hosts: mpiserver
   tasks:
@@ -28,12 +25,11 @@
         --name parsplice \
         --privileged \
         --net host \
+        -v /tmp/mpihosts:/tmp/mpihosts \
         -v /tmp/parsplice-logs/:/root/out \
         -v /tmp/leveldb_metrics:/tmp/leveldb_metrics \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
-        -v /tmp/parsplice.hosts:/root/hosts \
-        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
-        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
+        -v /tmp/layout:/root/layout \
         -e SSHD_PORT="{{ SSHD_PORT }}" \
         {{ parsplice_img }}
 
@@ -43,7 +39,7 @@
 - hosts: mpiclient
   tasks:
   - copy:
-      src:  "{{ playbook_dir|dirname }}/conf/mpihosts"
+      src:  "{{ playbook_dir|dirname }}/conf/hosts"
       dest: "/tmp/mpihosts"
   - shell: >
       docker run -dit \
@@ -55,9 +51,7 @@
         -v /tmp/parsplice-results/:/results \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
         -v /tmp/parsplice.pbs:/root/parsplice.pbs \
-        -v /tmp/parsplice.hosts:/root/hosts \
-        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
-        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
+        -v /tmp/layout:/root/layout \
         -e RANK0=1 \
         -e WAIT_SSHD_SECS=5 \
         -e SSHD_PORT="{{ SSHD_PORT }}" \
