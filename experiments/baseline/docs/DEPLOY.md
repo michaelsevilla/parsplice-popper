@@ -23,25 +23,15 @@ vim pushkeys.sh
 
 ## Grabbing Deploy Code
 
-Log into the head node and setup git:
+Log into the head node and setup git, and pull the code:
 
 ```bash
 git config --global user.email "mikesevilla3@gmail.com"
 git config --global user.name "Michael Sevilla"
 git config --global core.editor "vim"
-```
-
-You also need to install GIT LFS because that is how we store results.
-Directions are [here](https://github.com/git-lfs/git-lfs/wiki/Installation).
-If you do not plan on committing results back into this repo, you can skip this
-step. Now you can grab the ParSplice code:
-
-```bash
-GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/michaelsevilla/parsplice-popper.git
+git clone https://github.com/michaelsevilla/parsplice-popper.git
 cd parsplice-popper; git checkout cloudlab; git submodule update --init --recursive 
 ```
-
-The `GIT_LFS_SKIP_SMUDGE` flag avoids downloading results files from prior runs. 
 
 ## Sanity Check the CloudLab Cluster
 
