@@ -14,7 +14,7 @@ fi
 # do a parameter sweep
 mkdir results-parmsweep-keyspace || true
 for c in "t1000it2000" "t400it2000" "t700it2000" "t2000it4000" "t400it4000" "t1200it4000"; do
-  for run in 0; do
+  for run in 1; do
 
     # run the job
     ./teardown.sh
