@@ -10,7 +10,7 @@ MPIRUN_FLAGS: '-np 5
 parsplice_img: "piha.soe.ucsc.edu:5000/parsplice:nospawn"
 
 # how long (minutes) to run simulation
-simulation_time: 60
+simulation_time: 180
 
 # graphite
 webui_port: 8082
