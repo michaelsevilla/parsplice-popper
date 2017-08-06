@@ -19,7 +19,7 @@ RUN mkdir -p /etc/riak && \
     git config --global http.sslVerify false && \
     git clone https://github.com/michaelsevilla/leveldb.git /leveldb && \
     cd /leveldb && \
-    make && \
+    make -j24 && \
     make tools && \
     git clone https://github.com/dazfuller/LevelDB-Sample.git /sample && \
     cd /sample && \
@@ -37,12 +37,12 @@ RUN cd /usr/local/exaalt_deps && \
     echo "--> db deps" && \
     cd /usr/local/exaalt_deps/db-6.2.23/build_unix && \
     ../dist/configure --enable-stl --enable-cxx --prefix=/usr/local/ && \
-    make && \
+    make -j24 && \
     make install && \
     echo "--> nauty deps" && \
     cd /usr/local/exaalt_deps/nauty26r7 && \
     ./configure --prefix=/usr/local/ && \
-    make && \
+    make -j24 && \
     cp nauty.a /usr/local/lib/libnauty.a && \
     mkdir /usr/local/include/nauty && \
     cp *.h /usr/local/include/nauty && \
@@ -54,7 +54,7 @@ RUN cd /usr/local/exaalt_deps && \
 RUN git clone https://github.com/lanl/LATTE.git /usr/local/LATTE && \
     cd /usr/local/LATTE && \
     cp ./makefiles/makefile.CHOICES.gfort.lapack.lmp makefile.CHOICES && \
-    make && \
+    make -j24 && \
     cp /usr/local/LATTE/liblatte.a /usr/local/lib/.
 
 # install LANL LAMMPS package
@@ -65,16 +65,16 @@ RUN git clone https://rjzamora:Phishy_217@gitlab.com/exaalt/lammps.git /usr/loca
     cd /usr/local/lammps/lib/latte && \
     cp Makefile.lammps.gfortran Makefile.lammps && \
     cd /usr/local/lammps/src && \
-    make yes-latte && \
-    make yes-molecule && \
-    make yes-manybody && \
-    make yes-kspace && \
-    make yes-snap && \
-    make yes-misc && \
+    make yes-latte -j24 && \
+    make yes-molecule -j24 && \
+    make yes-manybody -j24 && \
+    make yes-kspace -j24 && \
+    make yes-snap -j24 && \
+    make yes-misc -j24 && \
     cp MAKE/MACHINES/Makefile.ubuntu_simple MAKE/Makefile.mpi && \
     ln -s /usr/local/LATTE/ /root/LATTE && \
     cd /usr/local/lammps/src && \
-    make mpi && \
+    make mpi -j24 && \
     make mpi mode=lib && \
     cp /usr/local/lammps/src/liblammps_mpi.a /usr/local/lib/. && \
     mkdir /usr/local/include/lammps && \

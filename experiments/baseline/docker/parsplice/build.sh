@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # name of the final image
-IMG="piha.soe.ucsc.edu:5000/parsplice"
+IMG="registry.gitlab.com/mikesevilla3/parsplice:nospawn"
 
 # don't pull results on git lfs
 export GIT_LFS_SKIP_SMUDGE=1
@@ -9,7 +9,7 @@ export GIT_LFS_SKIP_SMUDGE=1
 set -ex
 if [ ! -d src ]; then
   git clone https://gitlab.com/mikesevilla3/parsplice.git src
-  cd src; git checkout trinitite-uo2; cd -
+  cd src; git checkout trinitite-uo2-nospawn; cd -
 fi
 
 # setup by copying keys and source code (not deploy code)
