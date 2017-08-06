@@ -12,11 +12,14 @@
       src:  "{{ playbook_dir|dirname }}/conf/parsplice.pbs"
       dest: "/tmp/parsplice.pbs"
   - copy:
-      src:  "{{ playbook_dir|dirname }}/conf/layout"
-      dest: "/tmp/layout"
-  - copy:
       src:  "{{ playbook_dir|dirname }}/conf/hosts"
-      dest: "/tmp/mpihosts"
+      dest: "/tmp/parsplice.hosts"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/hosts.1"
+      dest: "/tmp/parsplice.hosts.1"
+  - copy:
+      src:  "{{ playbook_dir|dirname }}/conf/hosts.2"
+      dest: "/tmp/parsplice.hosts.2"
 
 - hosts: mpiserver
   tasks:
@@ -25,11 +28,12 @@
         --name parsplice \
         --privileged \
         --net host \
-        -v /tmp/mpihosts:/tmp/mpihosts \
         -v /tmp/parsplice-logs/:/root/out \
         -v /tmp/leveldb_metrics:/tmp/leveldb_metrics \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
-        -v /tmp/layout:/root/layout \
+        -v /tmp/parsplice.hosts:/root/hosts \
+        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
+        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
         -e SSHD_PORT="{{ SSHD_PORT }}" \
         {{ parsplice_img }}
 
@@ -39,7 +43,7 @@
 - hosts: mpiclient
   tasks:
   - copy:
-      src:  "{{ playbook_dir|dirname }}/conf/hosts"
+      src:  "{{ playbook_dir|dirname }}/conf/mpihosts"
       dest: "/tmp/mpihosts"
   - shell: >
       docker run -dit \
@@ -51,15 +55,21 @@
         -v /tmp/parsplice-results/:/results \
         -v /tmp/ps-config.xml:/root/input/ps-config.xml \
         -v /tmp/parsplice.pbs:/root/parsplice.pbs \
-        -v /tmp/layout:/root/layout \
+        -v /tmp/parsplice.hosts:/root/hosts \
+        -v /tmp/parsplice.hosts.1:/root/hosts.1 \
+        -v /tmp/parsplice.hosts.2:/root/hosts.2 \
         -e RANK0=1 \
         -e WAIT_SSHD_SECS=5 \
         -e SSHD_PORT="{{ SSHD_PORT }}" \
         -w /root/ \
         --entrypoint=/bin/bash \
-        {{ parsplice_img }} 
-  - shell: docker exec parsplice entrypoint.sh "qsub parsplice.pbs"
-  - shell: docker exec parsplice qrun 0
+        {{ parsplice_img }}
+
+  - name: this is a hack because I cannot get pbs to work on cloudlab
+    shell: >
+      docker exec parsplice mpiexec \
+        --allow-run-as-root --mca plm_rsh_args "-p {{ SSHD_PORT }}" --hostfile /tmp/mpihosts \
+        {{ MPIRUN_FLAGS }} /root/parsplice &
 
   - name: wait for rank 0 to start
     pause: seconds=10
