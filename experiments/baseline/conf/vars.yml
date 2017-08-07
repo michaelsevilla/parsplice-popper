@@ -1,7 +1,7 @@
 ---
 SSHD_PORT: 2222
 net_interface: "eth1"
-MPIRUN_FLAGS: '-np 5
+MPIRUN_FLAGS: '-np 10
                --oversubscribe
                -output-filename out/p
                -mca btl_tcp_if_include {{ net_interface }}

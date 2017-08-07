@@ -1,8 +1,7 @@
 issdm-0  slots=1
-issdm-11 slots=4
+issdm-11 slots=2
 issdm-12 slots=1
-issdm-14 slots=1
-issdm-15 slots=4
-issdm-18 slots=4
-issdm-24 slots=4
-issdm-27 slots=1
+issdm-15 slots=1
+issdm-18 slots=1
+issdm-24 slots=2
+issdm-27 slots=2
