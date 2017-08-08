@@ -17,6 +17,7 @@ your nodes, you can use my convenience script to push your SSH keys:
 
 ```bash
 wget https://raw.githubusercontent.com/michaelsevilla/parsplice-popper/cloudlab/experiments/baseline/cloudlab/pushkeys.sh
+chmod 750 pushkeys.sh
 vim pushkeys.sh
 ./pushkeys
 ```
@@ -101,7 +102,7 @@ Next, modify your configurations:
 
 ```bash
 cd ../conf
-vim vars.yml mpihosts
+vim vars.yml
 ```
 
 Also setup your LAMMPS configurations:
@@ -114,7 +115,7 @@ sed -i "s/<NWorkers> 1 <\/NWorkers>/<NWorkers> 2 <\/NWorkers>/g" ps-config/*
 Finally, set up your MPI ranks and run!
 
 ```bash
-SLURM_NODELIST=node-[0,1,2,3,4,5,6,7,8] python ../ansible/mkhosts-slurm.py 36 2
+SLURM_NODELIST=node-[0,1,2,3,4,5,6,7,8] python ../ansible/mkhosts-slurm-nospawn.py 1 30 1 1
 cd ..
 ./run.sh
 ```

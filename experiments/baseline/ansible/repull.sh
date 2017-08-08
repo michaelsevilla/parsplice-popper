@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -ex
-DPULL="docker pull piha.soe.ucsc.edu:5000/parsplice:nospawn"
+LOGIN="docker login --password $DOCKER_PASSWORD --username mikesevilla3 registry.gitlab.com"
+DPULL="docker pull registry.gitlab.com/mikesevilla3/parsplice:nospawn"
 cd .. 
-time ./run.sh --forks 50  mpiclient,mpiserver -m shell -a "$DPULL"
+time ./run.sh --forks 50  mpiclient,mpiserver -m shell -a "$LOGIN && $DPULL"

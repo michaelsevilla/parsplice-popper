@@ -1,7 +1,7 @@
-issdm-0  slots=1
-issdm-11 slots=2
-issdm-12 slots=1
-issdm-15 slots=1
-issdm-18 slots=1
-issdm-24 slots=2
-issdm-27 slots=2
+node-0 slots=1
+node-1 slots=30
+node-2 slots=1
+node-3 slots=1
+node-5 slots=1
+node-7 slots=30
+node-8 slots=30
