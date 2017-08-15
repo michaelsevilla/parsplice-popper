@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#SBATCH --time=01:10:00
+#SBATCH --ntasks=32
+#SBATCH --output /users/%u/joblogs/parsplice-nano500K-%j.out
+
+delay="500K"
+jobdir="/lustre/ttscratch1/sevilla/parsplice-output/nano/run-delay$delay-`date +%s`"
+srcdir="/lustre/ttscratch1/sevilla/parsplice-support"
+installdir="/users/sevilla/parsplice-install"
+mkdir -p $jobdir/logs
+cp -r $srcdir/parsplice/sample-input/nanoparticle-growth/* $jobdir/
+
+# Configure LAMMPS and Layouts
+cd $jobdir
+sed -i "s/<SocketsPerNode> 48 <\/SocketsPerNode>/<SocketsPerNode> 32 <\/SocketsPerNode>/g" input/*
+sed -i "s/<WorkersPerManager> 2 <\/WorkersPerManager>/<WorkersPerManager> 32 <\/WorkersPerManager>/g" input/*
+sed -i "s/<RanksPerWorker> 1 <\/RanksPerWorker>/<RanksPerWorker> 32 <\/RanksPerWorker>/g" input/*
+sed -i "s/<Delay> 1000000 <\/Delay>/<Delay> 500000 <\/Delay>/g" input/*
+python $srcdir/parsplice/node-affinity/mkhosts-slurm-nospawn.py 32 1 1 1
+
+# Run parsplice
+export LD_LIBRARY_PATH="$installdir/lib:$srcdir/boost_1_62_0/stage/lib"
+srun -n 32 --out $jobdir/logs/parsplice.log --label $installdir/parsplice

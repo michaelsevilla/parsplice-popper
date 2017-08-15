@@ -1,0 +1,34 @@
+2017/08/11-11:34:14.297746 2aaaaab35340                        Version: develop (open source)
+2017/08/11-11:34:14.298578 2aaaaab35340             Options.comparator: leveldb.InternalKeyComparator
+2017/08/11-11:34:14.298597 2aaaaab35340      Options.create_if_missing: 1
+2017/08/11-11:34:14.298606 2aaaaab35340        Options.error_if_exists: 0
+2017/08/11-11:34:14.298614 2aaaaab35340        Options.paranoid_checks: 0
+2017/08/11-11:34:14.298622 2aaaaab35340     Options.verify_compactions: 1
+2017/08/11-11:34:14.298630 2aaaaab35340                    Options.env: 0xf1fb20
+2017/08/11-11:34:14.298638 2aaaaab35340               Options.info_log: 0xf2d6a0
+2017/08/11-11:34:14.298646 2aaaaab35340      Options.write_buffer_size: 62914560
+2017/08/11-11:34:14.298654 2aaaaab35340         Options.max_open_files: 1000
+2017/08/11-11:34:14.298663 2aaaaab35340            Options.block_cache: 0xf2c7b0
+2017/08/11-11:34:14.298671 2aaaaab35340             Options.block_size: 4096
+2017/08/11-11:34:14.298679 2aaaaab35340       Options.block_size_steps: 16
+2017/08/11-11:34:14.298687 2aaaaab35340 Options.block_restart_interval: 16
+2017/08/11-11:34:14.298695 2aaaaab35340            Options.compression: 2
+2017/08/11-11:34:14.298703 2aaaaab35340          Options.filter_policy: NULL
+2017/08/11-11:34:14.298712 2aaaaab35340              Options.is_repair: false
+2017/08/11-11:34:14.298720 2aaaaab35340         Options.is_internal_db: false
+2017/08/11-11:34:14.298728 2aaaaab35340      Options.total_leveldb_mem: 2684354560
+2017/08/11-11:34:14.298736 2aaaaab35340  Options.block_cache_threshold: 33554432
+2017/08/11-11:34:14.298744 2aaaaab35340  Options.limited_developer_mem: false
+2017/08/11-11:34:14.298753 2aaaaab35340              Options.mmap_size: 0
+2017/08/11-11:34:14.298762 2aaaaab35340       Options.delete_threshold: 1000
+2017/08/11-11:34:14.298769 2aaaaab35340       Options.fadvise_willneed: false
+2017/08/11-11:34:14.298777 2aaaaab35340      Options.tiered_slow_level: 0
+2017/08/11-11:34:14.298785 2aaaaab35340     Options.tiered_fast_prefix: ././db0//min.0
+2017/08/11-11:34:14.298793 2aaaaab35340     Options.tiered_slow_prefix: ././db0//min.0
+2017/08/11-11:34:14.298801 2aaaaab35340                         crc32c: hardware
+2017/08/11-11:34:14.298809 2aaaaab35340   Options.cache_object_warming: true
+2017/08/11-11:34:14.298818 2aaaaab35340        Options.ExpiryActivated: false
+2017/08/11-11:34:14.298829 2aaaaab35340          Options.expiry_module: NULL
+2017/08/11-11:34:14.298841 2aaaaab35340                File cache size: 2514481152
+2017/08/11-11:34:14.298850 2aaaaab35340               Block cache size: 2516578304
+2017/08/11-11:34:14.564693 2aaaaab35340 Delete type=3 #1

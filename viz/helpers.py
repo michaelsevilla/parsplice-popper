@@ -109,22 +109,6 @@ def plot_trinitite_keyspace(ax, op, title, results):
     maxkey = d.loc[d['count'].idxmax()]
     print title + ":\tnkeys=" + str(len(d['key'])) + ", hottest key=" + str(maxkey[0]) + " (count=" + str(maxkey[1]) + ")"
     
-def plot_op_sweep(op, piha_nodes, clab_nodes):
-    fig, ax = plt.subplots(1, 4, figsize=(16, 3))
-    dirname = "../experiments/baseline/results-parmsweep-keyspace"
-    plot_keyspace(ax[0], op, piha_nodes, "PIHA (1K,  2K)", dirname + "/t1000it2000-rundev")
-    plot_keyspace(ax[1], op, piha_nodes, "PIHA (2K,  4K)", dirname + "/t2000it4000-rundev")
-    plot_keyspace(ax[2], op, piha_nodes, "PIHA (400, 2K)", dirname + "/t400it2000-rundev")
-    plot_trinitite_keyspace(ax[3], op, "CRAY (1K, 2K)", "../experiments/baseline-trinitite/")
-    x = ax[0].set_ylabel(op + " Ops")
-
-    fig, ax = plt.subplots(1, 4, figsize=(16, 3))
-    plot_keyspace(ax[0], op, clab_nodes, "CLAB (1K,  2K)", dirname + "/t1000it2000-runcloudlab")
-    plot_keyspace(ax[1], op, clab_nodes, "CLAB (2K,  4K)", dirname + "/t2000it4000-runcloudlab")
-    plot_keyspace(ax[2], op, clab_nodes, "CLAB (400, 2K)", dirname + "/t400it2000-runcloudlab")
-    plot_keyspace(ax[3], op, clab_nodes, "CLAB (400, 8K)", dirname + "/t400it8000-runcloudlab")
-    x = ax[0].set_ylabel(op + " Ops")
-
 # input: ax = where to plot
 # input: results = directory with results
 # input: op = operation to pull out
@@ -199,22 +183,3 @@ def plot_trinitite_keytimes(ax, ax2, op, title, results):
     ax.set_xlabel("Wall Clock Time (seconds)")
     ax2.set_xlabel("Wall Clock Time (seconds)")    
     ax.set_title(title)
-    
-def plot_op_sweep_keytimes(op, piha_nodes, clab_nodes):
-    fig, ax = plt.subplots(2, 4, figsize=(16, 5))
-    dirname = "../experiments/baseline/results-parmsweep-keyspace"
-    plot_keytimes(ax[0][0], ax[1][0], op, piha_nodes, "PIHA (1K, 2K)", dirname + "/t1000it2000-rundev")
-    plot_keytimes(ax[0][1], ax[1][1], op, piha_nodes, "PIHA (2K, 4K)", dirname + "/t2000it4000-rundev")
-    plot_keytimes(ax[0][2], ax[1][2], op, piha_nodes, "PIHA (400, 2K)", dirname + "/t400it2000-rundev")
-    plot_trinitite_keytimes(ax[0][3], ax[1][3], op, "TRINITITE (1K, 2K)", "../experiments/baseline-trinitite/")
-    x = ax[0][0].set_ylabel("State")
-    x = ax[1][0].set_ylabel(op + " Ops/Sec")
-
-    fig, ax = plt.subplots(2, 4, figsize=(16, 5))
-    plot_keytimes(ax[0][0], ax[1][0], op, clab_nodes, "CLAB (1K,  2K)", dirname + "/t1000it2000-runcloudlab")
-    plot_keytimes(ax[0][1], ax[1][1], op, clab_nodes, "CLAB (2K,  4K)", dirname + "/t2000it4000-runcloudlab")
-    plot_keytimes(ax[0][2], ax[1][2], op, clab_nodes, "CLAB (400, 2K)", dirname + "/t400it2000-runcloudlab")
-    plot_keytimes(ax[0][3], ax[1][3], op, clab_nodes, "CLAB (400, 8K)", dirname + "/t400it8000-runcloudlab")
-    x = ax[0][0].set_ylabel("State")
-    x = ax[1][0].set_ylabel(op + " Ops/Sec")
-
