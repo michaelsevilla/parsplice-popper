@@ -113,4 +113,4 @@ def plot_keytimes(ax, dfs, key_tuple, shift=0, nkeys=50):
     # cleanup graphs
     ax.set_xticklabels([])
     ax.set_title(key_tuple[0])
-    ax.set_ylabel(op + "/sec")
+    ax.set_ylabel(key_tuple[1] + "/sec")
