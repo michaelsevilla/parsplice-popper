@@ -1,10 +1,11 @@
 # Paper
 
-Dependencies: Docker
+Dependencies: Docker, git
 
 To build, run:
 
 ```bash
+$ git submodule update --init --recursive
 $ ./build 
 ```
 

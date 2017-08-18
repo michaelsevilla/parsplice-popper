@@ -8,6 +8,7 @@ docker run --rm \
   --workdir='/root/' \
   -v `pwd`/:/mnt \
   -v `pwd`/paper.tex:/root/paper.tex \
+  -v `pwd`/sections/0_outline.tex:/root/sections/0_outline.tex \
   -v `pwd`/sections/1_intro.tex:/root/sections/1_intro.tex \
   -v `pwd`/sections/2_background.tex:/root/sections/2_background.tex \
   -v `pwd`/sections/3_methodology.tex:/root/sections/3_methodology.tex \

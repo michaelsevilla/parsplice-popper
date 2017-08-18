@@ -1,13 +1,19 @@
 \section{Introduction}
 
 % What is the problem?
-Migrating resources is a useful tool for optimizing performance for systems
-that service highly accessed data\footnote{In this paper, we use the term
-``data" to refer to the partitioned key-value pairs AND file system metadata.}
-but deciding how to make the migrations is a risky trade-off. Data can be
-distributed to alleviate overloaded servers or it can be concentrated to
-exploit locality. These techniques are at odds and selecting the wrong technique
-can have catastrophic consequences. For example, migrating data to an
+Load balancing is a useful tool for optimizing performance in systems that
+service highly accessed data\footnote{In this paper, we use the term ``data" to
+refer to the partitioned key-value pairs AND file system metadata.} but
+deciding how to make the migrations is a risky trade-off. In this paper, we
+show that a one-size-fits-all data load balancing policy is not sufficient for
+even the simplest of HPC applications and argue for a dynamic load balancing
+policy.
+
+% Explain techniques
+Resource migration is the key mechanism for load balancing. In storage, data
+can be distributed to alleviate overloaded servers or it can be concentrated to
+exploit locality. These techniques are at odds and selecting the wrong
+technique can have catastrophic consequences. For example, migrating data to an
 already overloaded server or increasing the network hops by spreading data
 across an underutilized cluster will impact performance negatively.
 
