@@ -1,0 +1,17 @@
+ LAMMPS DATA FILE OF A DIMER
+  
+    2  atoms
+    1  atom types
+  0   60   xlo xhi
+  0   60   ylo yhi
+  0   60   zlo zhi
+  
+ Masses
+  
+         1     195.078
+  
+ Atoms
+  
+    1    1     30.00000     30.00000     30.00000
+    2    1     32.75770     30.00000     30.000000
+ 
