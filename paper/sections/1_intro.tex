@@ -1,21 +1,27 @@
 \section{Introduction}
 
 \begin{itemize}
-  \item key-value stores
+  \item key-value stores scale because they support
   \begin{enumerate}
-    \item Fine scale annotation
-    \item Scalability
+    \item fine scale annotation
     \item flexible, extensible formats
   \end{enumerate}
-  \item science
-  \begin{enumerate}
-    \item entropy is increasing
-    \item graph showing regimes (key distribution, popularity over time)
-  \end{enumerate}
+  \item science apps are structured, entropy increases over time (e.g.,
+  Figure~\ref{fig:keyspace-regimes} shows key distribution and key popularity
+  changing over time)
 \end{itemize}
 
-Hypothesis: re-distributing keys requires dynamic load balancing policies\cite{perez:jctc20150parsplice}
+Hypothesis: re-distributing keys requires dynamic load balancing
+policies\cite{perez:jctc20150parsplice}, similiar to distirbuted file systems.
+A one-size-fits all policy is not sufficient.
 
+\begin{figure}[t]
+  \noindent\includegraphics[width=0.5\textwidth]{figures/keyspace-regimes.png}\\
+  \caption{A load balancing policy that replicates the 10 most recently
+  accessed keys is sufficient for \texttt{Delay 1M} but a more complicated
+  keyspace like \texttt{Delay 100K} needs dynamic load balancing policies.
+  \label{fig:keyspace-regimes}}
+\end{figure}
 
 
 %% What is the problem?

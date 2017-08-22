@@ -1,20 +1,53 @@
 \section{Methodology}
 
-\subsection{Parsplice}
+Parsplice is an HPC application with distinct workload phases and a well-known keyspace (Figure~\ref{fig:scale-length}a).
+\begin{figure*}[tbh]
+  \noindent\includegraphics[width=1\textwidth]{figures/scale-length.png}\\
+  \caption{We can predict how fast the keyspace grows and which parts of the
+  namespace are popular.\label{fig:scale-length}}
+\end{figure*}
 
-Part 1: backend KV stores
+Part 1: Parsplice architecture uses a backend KV store
 \begin{itemize}
-  \item Single Node DB (LevelDB, BerkeleyDB)
-  \item Distributed KV store
-  \item HXHIM
+  \item Single Node DB (LevelDB, BerkeleyDB) is insufficient
+  \item Distributed KV store solves sync problem and enables load balancing
+  \item HXHIM 
 \end{itemize}
 
-Part 2: resulting imbalance
+Part 2: As Parsplice simulates, entropy increases resulting in keyspace inbalance
 \begin{itemize}
-  \item graphs
-  \item Mantle
-  \item approaches to load balancing
+  \item Figure~\ref{fig:keyspace-regimes} shows how imbalance controlled by ``delay"
+  \item Mantle (approach/API) to explore dynamic load balancing policies
+  \begin{itemize}
+    \item quantifies effect of load balancing
+    \item formalized effective FS balancers
+    \item debugging tool 
+  \end{itemize}
+  \item HXHIM is a good fit because it has migration mechanisms for load balancing
+  \begin{itemize}
+    \item bulk operations (\texttt{put/get()})
+    \item key partitioners
+    \item secondary indices
+  \end{itemize}
 \end{itemize}
+
+Results should show, In order from most likely to least likely:
+
+\begin{enumerate}
+
+  \item HPC key-value store workloads are structured (because they are mostly
+  workflows and simulations) that their job phases can be learned and exploited
+  using dynamic load balancing policies.
+
+  \item HPC key-value store workloads are so structured that one
+  policy-fits-all
+
+  \item HPC key-value store workloads are not structured enough to be learned
+
+  \item HPC key-value store workload hotspots/flash crowds are too fast to be
+  exploited
+
+\end{enumerate}
 
 
 
