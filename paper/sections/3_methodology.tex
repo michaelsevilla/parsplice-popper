@@ -1,10 +1,18 @@
 \section{Methodology}
 
-Parsplice is an HPC application with distinct workload phases and a well-known keyspace (Figure~\ref{fig:scale-length}a).
+Parsplice is an HPC application with distinct workload phases and a well-known keyspace (Figure~\ref{fig:keyspace-size}).
 \begin{figure*}[tbh]
-  \noindent\includegraphics[width=1\textwidth]{figures/scale-length.png}\\
-  \caption{We can predict how fast the keyspace grows and which parts of the
-  namespace are popular.\label{fig:scale-length}}
+  \noindent\includegraphics[width=1\textwidth]{figures/keyspace-size.png}\\
+  \caption{The keypspace grows in a structured way, so we can predict the
+  number and popularity of hot keys 
+  \label{fig:keyspace-size}}
+\end{figure*}
+
+\begin{figure*}[tbh]
+  \noindent\includegraphics[width=1\textwidth]{figures/keyspace-regimes-4hr.png}\\
+  \caption{Access patterns for a growth \(\delta\) of 1M shows similiar
+  behavior to 100K but on different time scales.
+  \label{fig:keyspace-regimes-4hr}}
 \end{figure*}
 
 Part 1: Parsplice architecture uses a backend KV store
@@ -14,9 +22,10 @@ Part 1: Parsplice architecture uses a backend KV store
   \item HXHIM 
 \end{itemize}
 
-Part 2: As Parsplice simulates, entropy increases resulting in keyspace inbalance
+Part 2: As Parsplice simulates, entropy increases resulting in keyspace
+inbalance (Figure~\ref{fig:keyspace-regimes} shows how imbalance controlled by
+``growth rate")
 \begin{itemize}
-  \item Figure~\ref{fig:keyspace-regimes} shows how imbalance controlled by ``delay"
   \item Mantle (approach/API) to explore dynamic load balancing policies
   \begin{itemize}
     \item quantifies effect of load balancing
@@ -28,6 +37,10 @@ Part 2: As Parsplice simulates, entropy increases resulting in keyspace inbalanc
     \item bulk operations (\texttt{put/get()})
     \item key partitioners
     \item secondary indices
+  \end{itemize}
+  \item we need a way to learn these regimes
+  \begin{itemize}
+    \item Figure~\ref{keyspace-regimes-4hr} shows the same phases as 100K but that the timestamps affected by delay
   \end{itemize}
 \end{itemize}
 

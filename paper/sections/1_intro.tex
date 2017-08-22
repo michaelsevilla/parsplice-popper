@@ -12,15 +12,15 @@
 \end{itemize}
 
 Hypothesis: re-distributing keys requires dynamic load balancing
-policies\cite{perez:jctc20150parsplice}, similiar to distirbuted file systems.
+policies~\cite{perez:jctc20150parsplice}, similiar to distributed file systems.
 A one-size-fits all policy is not sufficient.
 
 \begin{figure}[t]
   \noindent\includegraphics[width=0.5\textwidth]{figures/keyspace-regimes.png}\\
-  \caption{A load balancing policy that replicates the 10 most recently
-  accessed keys is sufficient for \texttt{Delay 1M} but a more complicated
-  keyspace like \texttt{Delay 100K} needs dynamic load balancing policies.
-  \label{fig:keyspace-regimes}}
+  \caption{The keyspace for run 1 has a larger but less active keyspace.
+  Caching the 10 most Caching the 10 most recently accessed keys is sufficient
+  for run 0 but but a more complicated keyspace like run 1 needs dynamic load
+  balancing policies.\label{fig:keyspace-regimes}}
 \end{figure}
 
 
