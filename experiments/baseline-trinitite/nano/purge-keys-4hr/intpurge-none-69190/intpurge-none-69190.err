@@ -1,0 +1,10 @@
++ mkdir -p /lustre/ttscratch1/sevilla/parsplice-output/nano/intpurge-none-69190/out
++ cd /lustre/ttscratch1/sevilla/parsplice-output/nano/intpurge-none-69190
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input.lammps .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/voter-pt.eam .
++ cp /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/slurm/scale-purged-keys/parsplice-purgenone input.slurm
+cp: cannot stat '/lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/slurm/scale-purged-keys/parsplice-purgenone': No such file or directory

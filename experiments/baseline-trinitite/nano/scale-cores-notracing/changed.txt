@@ -1,0 +1,3 @@
+- turned off all tracing and perf counters
+- changed scale workers to 4 hours
+TODO - changed delay 100K to workers
