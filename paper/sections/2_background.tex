@@ -1,11 +1,5 @@
 \section{Background}
 
-This paper takes the API and load balancers designed in
-Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
-balancer for Ceph, and applies them to
-MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
-designed for HPC.
-
 \subsection{ParSplice}
 \label{sec:parsplice}
 
@@ -17,7 +11,9 @@ designed for HPC.
   \label{fig:arch-parsplice}}
 \end{figure}
 
-It has 4 phases:
+
+ParSplice~\cite{perez:jctc20150parsplice} is a molecular dynamics simulation
+developed at LANL. It has 4 phases, as depicted in Figure~\ref{fig:arch-parsplice}:
 
 \begin{enumerate}
 
@@ -29,77 +25,16 @@ It has 4 phases:
   S broadcasts next segment(s) \(s_j\) 
 
   \item P`s pull new segment coordinates \{\(x_j, y_j\)\}
+
 \end{enumerate}
 
-
-
-\subsection{Mantle: File System Metadata Load Balancer}
-\label{sec:mantle}
-
-% What is Mantle?
-Mantle is an API that lets admnistrators control file system metadata load
-balancing. Mantle speeds up file systems by making metadata access faster,
-leveraging the fact that file system metadata IO imposes small and frequent
-accesses on the underlying storage system. Since data IO does not scale like
-metadata IO~\cite{roselli:atec2000-FS-workloads}, finding optimal ways to
-measure, migrate, and partition metadata load is a relatively new field, but
-has been shown to lead to large performance increases and more scalable file
-systems~\cite{zheng:pdsw2014-batchfs, grider:pdsw2015-marfs,
-ren:sc2014-indexfs, patil:fast2011-giga+, brandt:msst2003-lh}.  Mantle can use
-strategies from these papers to control how to distribute or concentrate file
-system metadata.
-
-% How does it work?
-It was built on CephFS, the file system above Ceph, so it inherits many of
-characteristics of the CephFS architecture, like the dedicated metadata cluster
-and heartbeat mechanisms shown at the top of Figure~\ref{fig:arch-mantle}.
-Each metadata server manages differently sized subtrees of the logical
-namespace and migration decisions are made synchronously, every 10 seconds.
-CephFS already had the mechanisms for load balancing, namely the ability to
-measure the load on a subtree, to migrate subtrees, and to partition subtrees
-into smaller subtrees, but it had hard-coded, ad-hoc policies for guiding the
-migrations.  Mantle reads user-defined policies written in Lua and returns
-decisions for how load should be migrated given the state of the cluster and
-the behavior of the workload. The hooks in Figure~\ref{fig:arch-mantle} show
-where CephFS calls out to the Mantle library to make decisions. While the
-decisions were made by Mantle, CephFS used its internal mechanisms to do the
-load balancing.
-
-% The actual policies
-The Mantle paper implemented three balancers and tested them under
-metadata-intensive workloads. The Greedy Spill balancer, which was based
-on~\cite{patil:fast2011-giga+}, sheds have its load aggressively when there are
-avaiable servers. Part of the Lua code for implementing this balancer is shown
-in~\ref{fig:arch-mantle-example}.  The Fill and Spill balancer, which was based
-on~\cite{pai:asplos1998-lard} sheds a fraction of the load only when the server
-is overloaded. Finally, the Adaptable balancer, which was based
-on~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph}, sheds a fraction of the
-load frequently.
-
-% What is the status?
-It was merged\footnote{https://github.com/ceph/ceph/pull/5155} and is starting
-to get users who are frustrated with the hard-coded load balancing policies
-that are shipped with CephFS. It was re-implemented using the ``programmable
-storage" approach~\cite{sevilla:eurosys17} to reduce lines of code for doing
-things like versioning and distributing balancer version.  Although Mantle is
-heavily integrated the daemons that compose an Ceph cluster, using Ceph's
-naming conventions and internal libraries like Ceph's version of protocol
-buffers, there is no reason that it cannot be extracted.
-
-\begin{figure}[tb]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-mantle.png}\\
-  \caption{The Mantle API lets adminstrators control load balancing by
-  changing the poicies for how to distribution or concentrate file system
-  metadata. It was merged into CephFS and inherits many aspects of that
-  architecture. Although it has the load balancing structure and logic from
-  CephFS (gray boxes), the actual API is not dependent on that code base.}
-  \label{fig:arch-mantle}
-\end{figure}
-\begin{figure}[tb]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-mantle-example.png}\\
-  \caption{The Greedy Spill balancer written in Lua using the Mantle API.}
-  \label{fig:arch-mantle-example}
-\end{figure}
+The database is single node (LevelDB or BerkeleyDB) with caches in front. Our
+goal is to replace this architecture with a distributed key-value store to
+solve the immediate sync problems that the ParSplice team is facting. Sliding
+in something like MDHIM~\cite{greenberg:hotstorage2015-mdhim} has the added
+benefit of enabling load balancing. ParSplice has distinct workload phases and
+a well-known keyspace (Figure~\ref{fig:methodology-keyspace}) so its
+performance should improve with better load balancing.
 
 \subsection{MDHIM: Key-Value Store for HPC}
 \label{sec:hxhim}
@@ -141,46 +76,71 @@ network type (infiniband/RDMA). Its policies are flexible, supporting
 customized partitioning strategies and user-defined secondary indices. This
 allows the system to choose whether to send load to the client or server.
 
-\subsection{Comparing Mantle and MDHIM}
-\begin{table*}
-\centering
-\begin{tabular}[tb]{ r | l | l | l | l }
-                       & 
-                       & \multicolumn{1}{c|}{\centering Both} 
-                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
-                       & \multicolumn{1}{c}{\centering MDHIM}
-                       \\\hline
-  workload   & characteristics     & small/frequent requests  & data access            & data management \\
-             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
-             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
-  system     & measure workload    & yes                      & directory temperature  & range server counts \\
-  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
-             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
-             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
-  migration  & interval            & configurable             & every 10 seconds       & every query \\
-  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
-  \multicolumn{5}{c}{}\\
-  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
-\end{tabular}
-\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
-\label{fig:arch-comparison}
-\end{table*}
-
-% Why are the designed for the same type of workload?
-The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
-MDHIM have similar designs. The workloads are very similar as the the services
-respond to small and frequent requests, which results in hot spots and flash
-crowds. As a result, popularity of the data, not the size, drives distribution
-in both systems. Both workloads also have data locality so the systems have
-mechanisms for leveraging requests with similar semantic meaning.  Finally, the
-overall design of both systems is decentralized meaning that there is no
-centralized scheduler and each server has an inconsistent global view.
-
-% What are the challenges?
-Despite the similarities, integrating the Mantle API with MDHIM has both design
-and technical challenges. Mantle is reactive to the workload as opposed to
-MDHIM migrations, which are triggered based on the request type. As a result,
-Mantle has functionality for exchanging server utilization (CPU, network,
-memory) and workload (tracks request types). MDHIM 
-
-
+%\subsection{Comparing Mantle and MDHIM}
+%\begin{table*}
+%\centering
+%\begin{tabular}[tb]{ r | l | l | l | l }
+%                       & 
+%                       & \multicolumn{1}{c|}{\centering Both} 
+%                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
+%                       & \multicolumn{1}{c}{\centering MDHIM}
+%                       \\\hline
+%  workload   & characteristics     & small/frequent requests  & data access            & data management \\
+%             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
+%             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
+%  system     & measure workload    & yes                      & directory temperature  & range server counts \\
+%  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
+%             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
+%             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
+%  migration  & interval            & configurable             & every 10 seconds       & every query \\
+%  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
+%  \multicolumn{5}{c}{}\\
+%  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
+%\end{tabular}
+%\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
+%\label{fig:arch-comparison}
+%\end{table*}
+%
+%% Why are the designed for the same type of workload?
+%The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
+%MDHIM have similar designs. The workloads are very similar as the the services
+%respond to small and frequent requests, which results in hot spots and flash
+%crowds. As a result, popularity of the data, not the size, drives distribution
+%in both systems. Both workloads also have data locality so the systems have
+%mechanisms for leveraging requests with similar semantic meaning.  Finally, the
+%overall design of both systems is decentralized meaning that there is no
+%centralized scheduler and each server has an inconsistent global view.
+%
+%% What are the challenges?
+%Despite the similarities, integrating the Mantle API with MDHIM has both design
+%and technical challenges. Mantle is reactive to the workload as opposed to
+%MDHIM migrations, which are triggered based on the request type. As a result,
+%Mantle has functionality for exchanging server utilization (CPU, network,
+%memory) and workload (tracks request types). MDHIM 
+%
+%
+%%This paper takes the API and load balancers designed in
+%%Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
+%%balancer for Ceph, and applies them to
+%%MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
+%%designed for HPC.
+%
+%
+%
+%Results should show, In order from most likely to least likely:
+%
+%\begin{enumerate}
+%
+%  \item HPC key-value store workloads are structured (because they are mostly
+%  workflows and simulations) that their job phases can be learned and exploited
+%  using dynamic load balancing policies.
+%
+%  \item HPC key-value store workloads are so structured that one
+%  policy-fits-all
+%
+%  \item HPC key-value store workloads are not structured enough to be learned
+%
+%  \item HPC key-value store workload hotspots/flash crowds are too fast to be
+%  exploited
+%
+%\end{enumerate}

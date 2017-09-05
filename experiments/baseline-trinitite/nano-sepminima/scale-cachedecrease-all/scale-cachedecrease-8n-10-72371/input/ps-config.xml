@@ -1,0 +1,205 @@
+<ParSplice>
+
+<PerfDelay> 10 </PerfDelay>
+
+<DB>
+<SyncDelay> 10 </SyncDelay>
+<RootDirectory> ./ </RootDirectory>
+<MaxKeyUsage> 10 </MaxKeyUsage>
+<TopMaxKey> 0 </TopMaxKey>
+<KeyUsageThreshold> 100000 </KeyUsageThreshold>
+</DB>
+
+
+<Splicer> 
+<CheckpointDelay> 100000000 </CheckpointDelay>
+<BroadcastDelay> 100 </BroadcastDelay>
+<ReportDelay> 100000 </ReportDelay>
+<FlushOnModify> 1 </FlushOnModify>
+</Splicer>
+
+<MC>
+<MinimumTrajectoryWeigth> 1e-12 </MinimumTrajectoryWeigth>
+<PredictionGranularity> 1 </PredictionGranularity>
+<BatchSize> 384 </BatchSize>
+<PredictionTime> 384 </PredictionTime>
+</MC>
+
+
+<SystemModifier>
+
+<Delay> 100000 </Delay>
+<RSphere> 30 </RSphere>
+<Center> 30 30 30 </Center>
+<Atoms>
+
+<Atom>
+<Label> 1 </Label>
+<Fraction> 1 </Fraction> 
+<RClose> 2.75 </RClose>
+<RFar> 3.5 </RFar>
+<Attributes> </Attributes>
+</Atom>
+
+</Atoms>
+
+</SystemModifier>
+
+
+
+<StateLabeler>
+<!-- <DistinguishableSpecies> 2 </DistinguishableSpecies> -->
+<Bonds> 
+
+
+    <Bond>
+    <Between> 1 1   </Between>
+    <Cutoff> 3 </Cutoff>
+    </Bond>
+
+
+</Bonds>
+</StateLabeler>
+
+
+
+<Topology>
+<WorkersPerManager> 2 </WorkersPerManager>
+<RanksPerWorker> 1 </RanksPerWorker>
+<SocketsPerNode> 48 </SocketsPerNode>
+</Topology>
+
+<InitialConfiguration> ./input.lammps    </InitialConfiguration>
+
+
+
+<LAMMPSEngine>
+
+<BootstrapScript> 
+units metal
+atom_style atomic
+dimension 3
+boundary p p p 
+read_data input.lammps
+pair_style eam/alloy
+pair_coeff * * voter-pt.eam Pt
+neighbor 2.0 bin
+neigh_modify every 1 delay 0 check no
+run 0 
+</BootstrapScript>
+
+
+<InitScript>
+delete_atoms group all
+read_data %Filename%  add merge
+</InitScript>
+
+
+<PostInitScript>
+</PostInitScript>
+
+<MDScript>
+timestep %Timestep%
+fix T all langevin %Temperature% %Temperature% %Friction% %RANDU% gjf no
+fix NVE all nve
+fix fixcom all recenter 30 30 30 units box
+run 0
+run %Nsteps%
+unfix fixcom
+unfix NVE
+unfix T
+</MDScript>
+
+
+<MinScript>
+minimize %Tolerance% %Tolerance% 1000 1000
+</MinScript>
+
+<WriteScript>
+write_data %Filename%
+</WriteScript>
+
+
+
+<VelocityInitScript>
+velocity    all create %InitTemperature%  %RANDU% dist gaussian
+</VelocityInitScript>
+
+
+
+</LAMMPSEngine>
+
+
+
+
+
+<TaskParameters>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_INIT_FROM_FILE  </Type>
+<Flavor> 1 </Flavor>
+</TaskParameter>
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_SEGMENT </Type>
+<Flavor> 1 </Flavor>
+<PreCorrelationTime> 1 </PreCorrelationTime>
+<PostCorrelationTime> 1 </PostCorrelationTime>
+<MinimumSegmentLength> 10 </MinimumSegmentLength> 
+<BlockTime> 1 </BlockTime>
+<MaximumDephasingTrials> 10 </MaximumDephasingTrials>
+<MaximumSegmentLength> 100 </MaximumSegmentLength>
+<ReportIntermediates> 0 </ReportIntermediates>
+<CanonicalLabels> 1 </CanonicalLabels>
+<Tolerance> 1e-12 </Tolerance>
+<Timestep> 0.002 </Timestep>
+<InitTemperature> 1400 </InitTemperature>
+<Temperature> 700 </Temperature>
+<Friction> 1 </Friction>
+</TaskParameter>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_MD </Type>
+<Flavor> 1 </Flavor>
+<BlockTime> 1 </BlockTime>
+<Timestep> 0.002 </Timestep>
+<Temperature>700</Temperature>
+<Friction> 1 </Friction>
+</TaskParameter>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_MIN </Type>
+<Flavor> 1 </Flavor>
+<Tolerance> 1e-12 </Tolerance>
+</TaskParameter>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_LABEL </Type>
+<Flavor> 1 </Flavor>
+</TaskParameter>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_REMAP </Type>
+<Flavor> 1 </Flavor>
+<CanonicalLabels> 1 </CanonicalLabels>
+</TaskParameter>
+
+
+<TaskParameter>
+<Type> PARSPLICE_TASK_WRITE_TO_FILE </Type>
+<Flavor> 1 </Flavor>
+<Filename> ./states/state-%Label%.out </Filename>
+</TaskParameter>
+
+
+</TaskParameters>
+
+
+
+
+</ParSplice>

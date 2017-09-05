@@ -6,26 +6,20 @@ cp biblio/references.bib references.bib
 
 docker run --rm \
   --workdir='/root/' \
-  -v `pwd`/:/mnt \
   -v `pwd`/paper.tex:/root/paper.tex \
-  -v `pwd`/sections/0_outline.tex:/root/sections/0_outline.tex \
-  -v `pwd`/sections/1_intro.tex:/root/sections/1_intro.tex \
-  -v `pwd`/sections/2_background.tex:/root/sections/2_background.tex \
-  -v `pwd`/sections/3_methodology.tex:/root/sections/3_methodology.tex \
   -v `pwd`/references.bib:/root/references.bib \
-  -v `pwd`/.deps/ametsoc.cls:/root/texmf/tex/latex/ametsoc.cls \
-  -v `pwd`/.deps/ametsoc2014.bst:/root/texmf/bibtex/bst/ametsoc2014.bst \
-  -v `pwd`/.deps/ACM-Reference-Format.bst:/root/texmf/bibtex/bst/ACM-Reference-Format.bst \
-  -v `pwd`/.deps/sigplanconf-eurosys.cls:/root/texmf/bibtex/bst/sigplanconf-eurosys.cls \
-  -v `pwd`/.deps/acmart.cls:/root/texmf/bibtex/bst/acmart.cls \
+  -v `pwd`/sections:/root/sections \
   -v `pwd`/figures:/root/figures \
+  -v `pwd`/.deps/acmart.cls:/root/acmart.cls \
+  -v `pwd`/.deps/ACM-Reference-Format.bst:/root/ACM-Reference-Format.bst \
   -v `pwd`/out:/root/out \
-  ivotron/texlive:latest sh -c \
+  tianon/latex sh -c \
     "pdflatex paper &&
      bibtex paper &&
      pdflatex paper &&
      pdflatex paper &&
      mv paper.pdf /root/out/" &> build.log
+    
 
 if [ $? != "0" ] ; then
   echo "ERROR"

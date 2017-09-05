@@ -1,0 +1,20 @@
++ mkdir -p /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-tasks-512-59963/out
++ cd /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-tasks-512-59963
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"' '"slurm/scale-workers/$1"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"' '"slurm/scale-workers/$1"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input.lammps .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"' '"slurm/scale-workers/$1"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/voter-pt.eam .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"' '"slurm/scale-workers/$1"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/slurm/scale-workers/ .
++ python /lustre/ttscratch1/sevilla/parsplice-support/parsplice/node-affinity/mkhosts-slurm-nospawn.py 32 1 1 1
++ export LD_LIBRARY_PATH=/users/sevilla/parsplice-install/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_62_0/stage/lib
++ LD_LIBRARY_PATH=/users/sevilla/parsplice-install/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_62_0/stage/lib
+++ awk '{print $1}'
+++ wc -l layout
++ srun -n 512 --output none /users/sevilla/parsplice-install/parsplice
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 59963 ON nid00083 CANCELLED AT 2017-08-18T20:55:01 DUE TO TIME LIMIT ***
+srun: got SIGCONT
+srun: forcing job termination

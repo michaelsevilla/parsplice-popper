@@ -1,0 +1,36 @@
++ echo
++ mkdir -p /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-cachedecrease-8n-100000-72364/out
++ cd /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-cachedecrease-8n-100000-72364
++ export LD_LIBRARY_PATH=/users/sevilla/parsplice-install-limcache/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_64_0/stage/lib
++ LD_LIBRARY_PATH=/users/sevilla/parsplice-install-limcache/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_64_0/stage/lib
++ export OMP_NUM_THREADS=1
++ OMP_NUM_THREADS=1
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/input .
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/input.lammps .
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/voter-pt.eam .
++ sed -i 's/<Delay> 1000000 <\/Delay>/<Delay> 100000 <\/Delay>/g' input/ps-config.xml
++ sed -i 's/<MaxKeyUsage> 0 <\/MaxKeyUsage>/<MaxKeyUsage> 100000 <\/MaxKeyUsage>/g' input/ps-config.xml
++ sed -i 's/<KeyUsageThreshold> 0 <\/KeyUsageThreshold>/<KeyUsageThreshold> 100000 <\/KeyUsageThreshold>/g' input/ps-config.xml
++ python /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/node-affinity/mkhosts-slurm-nospawn.py 32 1 1 1
+++ wc -l layout
+++ awk '{print $1}'
++ ntasks=256
++ srun -N 8 -n 256 --cpu_bind=cores --output none /users/sevilla/parsplice-install-limcache/parsplice
+srun: error: slurm_receive_msgs: Socket timed out on send/recv operation
+srun: error: Task launch for 72364.0 failed on node nid00087: Socket timed out on send/recv operation
+srun: error: Application launch failed: Socket timed out on send/recv operation
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+srun: error: nid00080: tasks 0-1,5-31: Killed
+srun: Terminating job step 72364.0
+srun: error: nid00088: tasks 192-223: Killed
+srun: error: nid00089: tasks 224-255: Killed
+srun: error: nid00086: tasks 128-159: Killed
+srun: error: nid00084: tasks 64-95: Killed
+srun: error: nid00085: tasks 96-127: Killed
+srun: error: nid00081: tasks 32-63: Killed
+srun: error: nid00080: task 3: Killed
+srun: error: nid00080: tasks 2,4: Killed
+srun: error: Timed out waiting for job step to complete

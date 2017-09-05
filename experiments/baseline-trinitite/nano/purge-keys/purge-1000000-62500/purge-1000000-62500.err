@@ -1,0 +1,22 @@
++ mkdir -p /lustre/ttscratch1/sevilla/parsplice-output/nano/purge-1000000-62500/out
++ cd /lustre/ttscratch1/sevilla/parsplice-output/nano/purge-1000000-62500
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/input.lammps .
++ for input in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/voter-pt.eam .
++ cp /lustre/ttscratch1/sevilla/parsplice-support/parsplice/sample-input/nanoparticle-growth/slurm/scale-purged-keys/parsplice-purge1000000 input.slurm
++ sed -i 's/<Delay> 1000000 <\/Delay>/<Delay> 100000 <\/Delay>/g' input/ps-config.xml
++ sed -i 's/<MaxKeyUsage> -1 <\/MaxKeyUsage>/<MaxKeyUsage> 1000000 <\/MaxKeyUsage>/g' input/ps-config.xml
++ python /lustre/ttscratch1/sevilla/parsplice-support/parsplice/node-affinity/mkhosts-slurm-nospawn.py 32 1 1 1
++ /lustre/ttscratch1/sevilla/parsplice-support/parsplice/tools/mem.sh /lustre/ttscratch1/sevilla/parsplice-output/nano/purge-1000000-62500/out/
++ export LD_LIBRARY_PATH=/users/sevilla/parsplice-install/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_62_0/stage/lib
++ LD_LIBRARY_PATH=/users/sevilla/parsplice-install/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_62_0/stage/lib
+++ wc -l layout
+++ awk '{print $1}'
++ srun -n 32 --output none /users/sevilla/parsplice-install/parsplice
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 62500 ON nid00084 CANCELLED AT 2017-08-28T10:07:01 DUE TO TIME LIMIT ***
+srun: got SIGCONT
+srun: forcing job termination
