@@ -1,232 +1,127 @@
-%% Version 4.3.2, 25 August 2014
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Template.tex --  LaTeX-based template for submissions to the 
-% American Meteorological Society
-%
-% Template developed by Amy Hendrickson, 2013, TeXnology Inc., 
-% amyh@texnology.com, http://www.texnology.com
-% following earlier work by Brian Papa, American Meteorological Society
-%
-% Email questions to latex@ametsoc.org.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PREAMBLE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Start with one of the following:
-% DOUBLE-SPACED VERSION FOR SUBMISSION TO THE AMS
-%\documentclass{ametsoc}
-
-% TWO-COLUMN JOURNAL PAGE LAYOUT---FOR AUTHOR USE ONLY
-\documentclass[twocol]{ametsoc}
+\documentclass[sigconf]{acmart}
 \usepackage{arydshln}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% To be entered only if twocol option is used
+\usepackage{booktabs} % For formal tables
 
-\journal{jamc}
 
-%  Please choose a journal abbreviation to use above from the following list:
-% 
-%   jamc     (Journal of Applied Meteorology and Climatology)
-%   jtech     (Journal of Atmospheric and Oceanic Technology)
-%   jhm      (Journal of Hydrometeorology)
-%   jpo     (Journal of Physical Oceanography)
-%   jas      (Journal of Atmospheric Sciences)	
-%   jcli      (Journal of Climate)
-%   mwr      (Monthly Weather Review)
-%   wcas      (Weather, Climate, and Society)
-%   waf       (Weather and Forecasting)
-%   bams (Bulletin of the American Meteorological Society)
-%   ei    (Earth Interactions)
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Citations should be of the form ``author year''  not ``author, year''
-%\bibpunct{(}{)}{;}{a}{}{,}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOI
+\acmDOI{10.475/123_4}
 
-%%% To be entered by author:
+% ISBN
+\acmISBN{123-4567-24-567/08/06}
 
-%% May use \\ to break lines in title:
+%Conference
+\acmConference[WOODSTOCK'97]{ACM Woodstock conference}{July 1997}{El
+  Paso, Texas USA} 
+\acmYear{1997}
+\copyrightyear{2016}
 
-\title{Metadata Load Balancing Policies and Key-Value Stores}
 
-%%% Enter authors' names, as you see in this example:
-%%% Use \correspondingauthor{} and \thanks{Current Affiliation:...}
-%%% immediately following the appropriate author.
-%%%
-%%% Note that the \correspondingauthor{} command is NECESSARY.
-%%% The \thanks{} commands are OPTIONAL.
+\acmArticle{4}
+\acmPrice{15.00}
 
-    %\authors{Author One\correspondingauthor{Author One, 
-    % American Meteorological Society, 
-    % 45 Beacon St., Boston, MA 02108.}
-% and Author Two\thanks{Current affiliation: American Meteorological Society, 
-    % 45 Beacon St., Boston, MA 02108.}}
-
-\authors{Michael Sevilla\correspondingauthor{Los Alamos National Laboratory}}
-
-%% Follow this form:
-    % \affiliation{American Meteorological Society, 
-    % Boston, Massachusetts.}
-
-\affiliation{}
-
-%% Follow this form:
-    %\email{latex@ametsoc.org}
-
-\email{msevilla@ucsc.edu}
-
-%% If appropriate, add additional authors, different affiliations:
-    %\extraauthor{Extra Author}
-    %\extraaffil{Affiliation, City, State/Province, Country}
-
-%\extraauthor{}
-%\extraaffil{}
-
-%% May repeat for a additional authors/affiliations:
-
-%\extraauthor{}
-%\extraaffil{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ABSTRACT
-%
-% Enter your abstract here
-% Abstracts should not exceed 250 words in length!
-%
-% For BAMS authors only: If your article requires a Capsule Summary, please place the capsule text at the end of your abstract
-% and identify it as the capsule. Example: This is the end of the abstract. (Capsule Summary) This is the capsule summary. 
-\abstract{Enter the text of your abstract here.}
+% These commands are optional
+%\acmBooktitle{Transactions of the ACM Woodstock conference}
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
 
 
 \begin{document}
+\title{SIG Proceedings Paper in LaTeX Format}
+%\titlenote{Produces the permission block, and
+%  copyright information}
+%\subtitle{Extended Abstract}
+%\subtitlenote{The full version of the author's guide is available as
+%  \texttt{acmart.pdf} document}
 
-%% Necessary!
+
+\author{Ben Trovato}
+\authornote{Dr.~Trovato insisted his name be first.}
+\orcid{1234-5678-9012}
+\affiliation{%
+  \institution{Institute for Clarity in Documentation}
+  \streetaddress{P.O. Box 1212}
+  \city{Dublin} 
+  \state{Ohio} 
+  \postcode{43017-6221}
+}
+\email{trovato@corporation.com}
+
+\author{G.K.M. Tobin}
+\authornote{The secretary disavows any knowledge of this author's actions.}
+\affiliation{%
+  \institution{Institute for Clarity in Documentation}
+  \streetaddress{P.O. Box 1212}
+  \city{Dublin} 
+  \state{Ohio} 
+  \postcode{43017-6221}
+}
+\email{webmaster@marysville-ohio.com}
+
+
+\begin{abstract}
+TODO
+\end{abstract}
+
+%
+% The code below should be generated by the tool at
+% http://dl.acm.org/ccs.cfm
+% Please copy and paste the code instead of the example below. 
+%
+%\begin{CCSXML}
+%<ccs2012>
+% <concept>
+%  <concept_id>10010520.10010553.10010562</concept_id>
+%  <concept_desc>Computer systems organization~Embedded systems</concept_desc>
+%  <concept_significance>500</concept_significance>
+% </concept>
+% <concept>
+%  <concept_id>10010520.10010575.10010755</concept_id>
+%  <concept_desc>Computer systems organization~Redundancy</concept_desc>
+%  <concept_significance>300</concept_significance>
+% </concept>
+% <concept>
+%  <concept_id>10010520.10010553.10010554</concept_id>
+%  <concept_desc>Computer systems organization~Robotics</concept_desc>
+%  <concept_significance>100</concept_significance>
+% </concept>
+% <concept>
+%  <concept_id>10003033.10003083.10003095</concept_id>
+%  <concept_desc>Networks~Network reliability</concept_desc>
+%  <concept_significance>100</concept_significance>
+% </concept>
+%</ccs2012>  
+%\end{CCSXML}
+
+%\ccsdesc[500]{Computer systems organization~Embedded systems}
+%\ccsdesc[300]{Computer systems organization~Redundancy}
+%\ccsdesc{Computer systems organization~Robotics}
+%\ccsdesc[100]{Networks~Network reliability}
+%
+%
+%\keywords{ACM proceedings, \LaTeX, text tagging}
+
+
 \maketitle
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MAIN BODY OF PAPER
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-
-%\input{./sections/0_outline}
 \input{./sections/1_intro}
 \input{./sections/2_background}
 \input{./sections/3_methodology}
 \input{./sections/5_conclusion}
 
-%% In all cases, if there is only one entry of this type within
-%% the higher level heading, use the star form: 
-%%
-%\section{Section title}
-%\subsection*{subsection}
-%
-%text... and some citations \cite{Kuji_Nakajima2002}
-%
-%\section{Section title}
-
-%vs
-
-% \section{Section title}
-% \subsection{subsection one}
-% text...
-% \subsection{subsection two}
-% \section{Section title}
-
-%%%
-% \section{First primary heading}
-
-% \subsection{First secondary heading}
-
-% \subsubsection{First tertiary heading}
-
-% \paragraph{First quaternary heading}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ACKNOWLEDGMENTS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-\acknowledgments
-Start acknowledgments here.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% APPENDIXES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Use \appendix if there is only one appendix.
-%\appendix
-
-% Use \appendix[A], \appendix}[B], if you have multiple appendixes.
-%\appendix[A]
-
-%% Appendix title is necessary! For appendix title:
-%\appendixtitle{}
-
-%%% Appendix section numbering (note, skip \section and begin with \subsection)
-% \subsection{First primary heading}
-
-% \subsubsection{First secondary heading}
-
-% \paragraph{First tertiary heading}
-
-%% Important!
-%\appendcaption{<appendix letter and number>}{<caption>} 
-%must be used for figures and tables in appendixes, e.g.,
-%
-%\begin{figure}
-%\noindent\includegraphics[width=19pc,angle=0]{figure01.pdf}\\
-%\appendcaption{A1}{Caption here.}
-%\end{figure}
-%
-% All appendix figures/tables should be placed in order AFTER the main figures/tables, i.e., tables, appendix tables, figures, appendix figures.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% REFERENCES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Make your BibTeX bibliography by using these commands:
-\bibliographystyle{abbrv}
-\bibliography{references}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% TABLES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Enter tables at the end of the document, before figures.
-%%%
-%%
-%\begin{table}[t]
-%\caption{This is a sample table caption and table layout.  Enter as many tables as
-%  necessary at the end of your manuscript. Table from Lorenz (1963).}\label{t1}
-%\begin{center}
-%\begin{tabular}{ccccrrcrc}
-%\hline\hline
-%$N$ & $X$ & $Y$ & $Z$\\
-%\hline
-% 0000 & 0000 & 0010 & 0000 \\
-% 0005 & 0004 & 0012 & 0000 \\
-% 0010 & 0009 & 0020 & 0000 \\
-% 0015 & 0016 & 0036 & 0002 \\
-% 0020 & 0030 & 0066 & 0007 \\
-% 0025 & 0054 & 0115 & 0024 \\
-%\hline
-%\end{tabular}
-%\end{center}
-%\end{table}
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% FIGURES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Enter figures at the end of the document, after tables.
-%%%
-%%
-%\begin{figure}[t]
-%  \noindent\includegraphics[width=19pc,angle=0]{figures/Fig02.pdf}\\
-%  \caption{Enter the caption for your figure here.  Repeat as
-%  necessary for each of your figures.}\label{f1}
-%\end{figure}
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references} 
 
 \end{document}

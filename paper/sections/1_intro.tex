@@ -1,26 +1,24 @@
 \section{Introduction}
 
-\begin{itemize}
-  \item key-value stores scale because they support
-  \begin{enumerate}
-    \item fine scale annotation
-    \item flexible, extensible formats
-  \end{enumerate}
-  \item science apps are structured, entropy increases over time (e.g.,
-  Figure~\ref{fig:keyspace-regimes} shows key distribution and key popularity
-  changing over time)
-\end{itemize}
+Key-Value stores scale because they support (1) fine scale annotation and (2)
+flexible, extensible formats. Science applications are structured, entropy
+increases over time (e.g., Figure~\ref{fig:futurework-regimes} shows key
+distribution and key popularity changing over time). Our hypothesis is that
+re-distributing keys requires dynamic load balancing policies, similiar to
+distributed file systems.  A one-size-fits all policy is not sufficient. Our
+contributions are:
 
-Hypothesis: re-distributing keys requires dynamic load balancing
-policies~\cite{perez:jctc20150parsplice}, similiar to distributed file systems.
-A one-size-fits all policy is not sufficient.
+\begin{enumerate}
+  \item an analysis of the ParSplice keyspace
+  \item using a modern distributed key-value store
+  \item positive effects of Mantle 
+\end{enumerate}
 
 \begin{figure}[t]
-  \noindent\includegraphics[width=0.5\textwidth]{figures/keyspace-regimes.png}\\
-  \caption{The keyspace for run 1 has a larger but less active keyspace.
-  Caching the 10 most Caching the 10 most recently accessed keys is sufficient
-  for run 0 but but a more complicated keyspace like run 1 needs dynamic load
-  balancing policies.\label{fig:keyspace-regimes}}
+  \noindent\includegraphics[width=0.5\textwidth]{figures/futurework-regimes.png}\\
+  \caption{Caching the 100 most recently accessed keys is sufficient for run 1
+  but more active keyspaces like run 0 need dynamic load balancing
+  policies.\label{fig:futurework-regimes}}
 \end{figure}
 
 

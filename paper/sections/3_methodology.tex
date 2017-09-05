@@ -1,30 +1,55 @@
 \section{Methodology}
 
-Parsplice is an HPC application with distinct workload phases and a well-known keyspace (Figure~\ref{fig:keyspace-size}).
-\begin{figure*}[tbh]
-  \noindent\includegraphics[width=1\textwidth]{figures/keyspace-size.png}\\
-  \caption{The keypspace grows in a structured way, so we can predict the
-  number and popularity of hot keys 
-  \label{fig:keyspace-size}}
-\end{figure*}
+IT HAS 8K keys!
 
-\begin{figure*}[tbh]
-  \noindent\includegraphics[width=1\textwidth]{figures/keyspace-regimes-4hr.png}\\
-  \caption{Access patterns for a growth \(\delta\) of 1M shows similiar
-  behavior to 100K but on different time scales.
-  \label{fig:keyspace-regimes-4hr}}
-\end{figure*}
+%\begin{figure*}[tbh]
+%  \noindent\includegraphics[width=1\textwidth]{figures/keyspace-regimes-4hr.png}\\
+%  \caption{Access patterns for a growth \(\delta\) of 1M shows similiar
+%  behavior to 100K but on different time scales.
+%  \label{fig:keyspace-regimes-4hr}}
+%\end{figure*}
 
-Part 1: Parsplice architecture uses a backend KV store
-\begin{itemize}
-  \item Single Node DB (LevelDB, BerkeleyDB) is insufficient
-  \item Distributed KV store solves sync problem and enables load balancing
-  \item HXHIM 
-\end{itemize}
-
+\subsection{Contribution 1: ParSplice Keyspace Analysis}
 Part 2: As Parsplice simulates, entropy increases resulting in keyspace
 inbalance (Figure~\ref{fig:keyspace-regimes} shows how imbalance controlled by
 ``growth rate")
+
+
+\begin{figure}[tbh]
+  \noindent\includegraphics[width=0.5\textwidth]{figures/methodology-keyspace.png}\\
+  \caption{ The ParSplice keyspace is small (numbers above bars) but must
+  satisfy many reads as workers calculate new segments. The active keyspace is
+  difficult to predict a priori but the optimal load balancing strategy strikes a
+  good balance between preformance and utiization. 
+  \label{fig:methodology-keyspace}}
+\end{figure}
+
+\subsection{Contribution 2: Positive Effects of Load Balncing}
+  \begin{figure}[tbh]
+  \noindent\includegraphics[width=0.5\textwidth]{figures/methodology-tradeoff.png}\\
+  \caption{The optimal cache size must strike a balance between performance and
+  resoure utilization. Here we show the trade-off for a static load balancing
+  policy that evicts keys when the cache reaches a certain size. For this
+  configuration, a 100K key cache has the best performance/utilziation, despite
+  the keyspace being 250K keys. \label{fig:methodology-tradeoff}}
+\end{figure}
+
+\subsection{Contribution 3: The Need for Dynamic Load Balancing Policies}
+Why doesn't 1 policy fit all?
+\begin{itemize}
+  \item keyspace gets less active
+  \item beginning: levelDB can't handle it
+  \item end: levelDB can handle it
+\end{itemize}
+
+
+\begin{enumerate}
+  \item fix DB size to 4GB
+  \item trajectory default (1M  and 100K)
+  \item trajectory with naiive balancer
+\end{enumerate}
+
+
 \begin{itemize}
   \item Mantle (approach/API) to explore dynamic load balancing policies
   \begin{itemize}
@@ -44,24 +69,78 @@ inbalance (Figure~\ref{fig:keyspace-regimes} shows how imbalance controlled by
   \end{itemize}
 \end{itemize}
 
-Results should show, In order from most likely to least likely:
+% What is Mantle?
+Mantle is an API that lets admnistrators control file system metadata load
+balancing. Mantle speeds up file systems by making metadata access faster,
+leveraging the fact that file system metadata IO imposes small and frequent
+accesses on the underlying storage system. Since data IO does not scale like
+metadata IO~\cite{roselli:atec2000-FS-workloads}, finding optimal ways to
+measure, migrate, and partition metadata load is a relatively new field, but
+has been shown to lead to large performance increases and more scalable file
+systems~\cite{zheng:pdsw2014-batchfs, grider:pdsw2015-marfs,
+ren:sc2014-indexfs, patil:fast2011-giga+, brandt:msst2003-lh}.  Mantle can use
+strategies from these papers to control how to distribute or concentrate file
+system metadata.
 
-\begin{enumerate}
+% How does it work?
+It was built on CephFS, the file system above Ceph, so it inherits many of
+characteristics of the CephFS architecture, like the dedicated metadata cluster
+and heartbeat mechanisms shown at the top of Figure~\ref{fig:arch-mantle}.
+Each metadata server manages differently sized subtrees of the logical
+namespace and migration decisions are made synchronously, every 10 seconds.
+CephFS already had the mechanisms for load balancing, namely the ability to
+measure the load on a subtree, to migrate subtrees, and to partition subtrees
+into smaller subtrees, but it had hard-coded, ad-hoc policies for guiding the
+migrations.  Mantle reads user-defined policies written in Lua and returns
+decisions for how load should be migrated given the state of the cluster and
+the behavior of the workload. The hooks in Figure~\ref{fig:arch-mantle} show
+where CephFS calls out to the Mantle library to make decisions. While the
+decisions were made by Mantle, CephFS used its internal mechanisms to do the
+load balancing.
 
-  \item HPC key-value store workloads are structured (because they are mostly
-  workflows and simulations) that their job phases can be learned and exploited
-  using dynamic load balancing policies.
+% The actual policies
+The Mantle paper implemented three balancers and tested them under
+metadata-intensive workloads. The Greedy Spill balancer, which was based
+on~\cite{patil:fast2011-giga+}, sheds have its load aggressively when there are
+avaiable servers. Part of the Lua code for implementing this balancer is shown
+in~\ref{fig:arch-mantle-example}.  The Fill and Spill balancer, which was based
+on~\cite{pai:asplos1998-lard} sheds a fraction of the load only when the server
+is overloaded. Finally, the Adaptable balancer, which was based
+on~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph}, sheds a fraction of the
+load frequently.
 
-  \item HPC key-value store workloads are so structured that one
-  policy-fits-all
+% What is the status?
+It was merged\footnote{https://github.com/ceph/ceph/pull/5155} and is starting
+to get users who are frustrated with the hard-coded load balancing policies
+that are shipped with CephFS. It was re-implemented using the ``programmable
+storage" approach~\cite{sevilla:eurosys17} to reduce lines of code for doing
+things like versioning and distributing balancer version.  Although Mantle is
+heavily integrated the daemons that compose an Ceph cluster, using Ceph's
+naming conventions and internal libraries like Ceph's version of protocol
+buffers, there is no reason that it cannot be extracted.
 
-  \item HPC key-value store workloads are not structured enough to be learned
+\begin{figure}[tb]
+  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-mantle.png}\\
+  \caption{The Mantle API lets adminstrators control load balancing by
+  changing the poicies for how to distribution or concentrate file system
+  metadata. It was merged into CephFS and inherits many aspects of that
+  architecture. Although it has the load balancing structure and logic from
+  CephFS (gray boxes), the actual API is not dependent on that code base.}
+  \label{fig:arch-mantle}
+\end{figure}
+\begin{figure}[tb]
+  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-mantle-example.png}\\
+  \caption{The Greedy Spill balancer written in Lua using the Mantle API.}
+  \label{fig:arch-mantle-example}
+\end{figure}
 
-  \item HPC key-value store workload hotspots/flash crowds are too fast to be
-  exploited
+\subsection{Contribution 4: Machine Learning Keyspace Activity}
 
-\end{enumerate}
-
+We can't find the optimal keypsace size for every permuation, finding the key threshold changes with
+\begin{itemize}
+  \item number of nodes
+  \item size of delay
+\end{itemize}
 
 
 %\begin{itemize}

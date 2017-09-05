@@ -1,0 +1,24 @@
++ echo
++ mkdir -p /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-cachelimit-8n-100000-72005/out
++ cd /lustre/ttscratch1/sevilla/parsplice-output/nano/scale-cachelimit-8n-100000-72005
++ export LD_LIBRARY_PATH=/users/sevilla/parsplice-install-limcache/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_64_0/stage/lib
++ LD_LIBRARY_PATH=/users/sevilla/parsplice-install-limcache/lib:/lustre/ttscratch1/sevilla/parsplice-support/boost_1_64_0/stage/lib
++ export OMP_NUM_THREADS=1
++ OMP_NUM_THREADS=1
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/input .
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/input.lammps .
++ for i in '"input"' '"input.lammps"' '"voter-pt.eam"'
++ cp -r /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/sample-input/nanoparticle-growth/voter-pt.eam .
++ sed -i 's/<Delay> 1000000 <\/Delay>/<Delay> 100000 <\/Delay>/g' input/ps-config.xml
++ sed -i 's/<MaxKeyUsage> 0 <\/MaxKeyUsage>/<MaxKeyUsage> 100000 <\/MaxKeyUsage>/g' input/ps-config.xml
++ python /lustre/ttscratch1/sevilla/parsplice-support/parsplice-limcache/node-affinity/mkhosts-slurm-nospawn.py 32 1 1 1
+++ awk '{print $1}'
+++ wc -l layout
++ ntasks=256
++ srun -N 8 -n 256 --cpu_bind=cores --output none /users/sevilla/parsplice-install-limcache/parsplice
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 72005 ON nid00012 CANCELLED AT 2017-09-03T12:49:19 DUE TO TIME LIMIT ***
+srun: got SIGCONT
+srun: forcing job termination
