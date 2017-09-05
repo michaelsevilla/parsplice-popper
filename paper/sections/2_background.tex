@@ -76,71 +76,71 @@ network type (infiniband/RDMA). Its policies are flexible, supporting
 customized partitioning strategies and user-defined secondary indices. This
 allows the system to choose whether to send load to the client or server.
 
-\subsection{Comparing Mantle and MDHIM}
-\begin{table*}
-\centering
-\begin{tabular}[tb]{ r | l | l | l | l }
-                       & 
-                       & \multicolumn{1}{c|}{\centering Both} 
-                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
-                       & \multicolumn{1}{c}{\centering MDHIM}
-                       \\\hline
-  workload   & characteristics     & small/frequent requests  & data access            & data management \\
-             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
-             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
-  system     & measure workload    & yes                      & directory temperature  & range server counts \\
-  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
-             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
-             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
-  migration  & interval            & configurable             & every 10 seconds       & every query \\
-  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
-  \multicolumn{5}{c}{}\\
-  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
-\end{tabular}
-\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
-\label{fig:arch-comparison}
-\end{table*}
-
-% Why are the designed for the same type of workload?
-The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
-MDHIM have similar designs. The workloads are very similar as the the services
-respond to small and frequent requests, which results in hot spots and flash
-crowds. As a result, popularity of the data, not the size, drives distribution
-in both systems. Both workloads also have data locality so the systems have
-mechanisms for leveraging requests with similar semantic meaning.  Finally, the
-overall design of both systems is decentralized meaning that there is no
-centralized scheduler and each server has an inconsistent global view.
-
-% What are the challenges?
-Despite the similarities, integrating the Mantle API with MDHIM has both design
-and technical challenges. Mantle is reactive to the workload as opposed to
-MDHIM migrations, which are triggered based on the request type. As a result,
-Mantle has functionality for exchanging server utilization (CPU, network,
-memory) and workload (tracks request types). MDHIM 
-
-
-%This paper takes the API and load balancers designed in
-%Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
-%balancer for Ceph, and applies them to
-%MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
-%designed for HPC.
-
-
-
-Results should show, In order from most likely to least likely:
-
-\begin{enumerate}
-
-  \item HPC key-value store workloads are structured (because they are mostly
-  workflows and simulations) that their job phases can be learned and exploited
-  using dynamic load balancing policies.
-
-  \item HPC key-value store workloads are so structured that one
-  policy-fits-all
-
-  \item HPC key-value store workloads are not structured enough to be learned
-
-  \item HPC key-value store workload hotspots/flash crowds are too fast to be
-  exploited
-
-\end{enumerate}
+%\subsection{Comparing Mantle and MDHIM}
+%\begin{table*}
+%\centering
+%\begin{tabular}[tb]{ r | l | l | l | l }
+%                       & 
+%                       & \multicolumn{1}{c|}{\centering Both} 
+%                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
+%                       & \multicolumn{1}{c}{\centering MDHIM}
+%                       \\\hline
+%  workload   & characteristics     & small/frequent requests  & data access            & data management \\
+%             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
+%             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
+%  system     & measure workload    & yes                      & directory temperature  & range server counts \\
+%  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
+%             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
+%             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
+%  migration  & interval            & configurable             & every 10 seconds       & every query \\
+%  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
+%  \multicolumn{5}{c}{}\\
+%  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
+%\end{tabular}
+%\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
+%\label{fig:arch-comparison}
+%\end{table*}
+%
+%% Why are the designed for the same type of workload?
+%The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
+%MDHIM have similar designs. The workloads are very similar as the the services
+%respond to small and frequent requests, which results in hot spots and flash
+%crowds. As a result, popularity of the data, not the size, drives distribution
+%in both systems. Both workloads also have data locality so the systems have
+%mechanisms for leveraging requests with similar semantic meaning.  Finally, the
+%overall design of both systems is decentralized meaning that there is no
+%centralized scheduler and each server has an inconsistent global view.
+%
+%% What are the challenges?
+%Despite the similarities, integrating the Mantle API with MDHIM has both design
+%and technical challenges. Mantle is reactive to the workload as opposed to
+%MDHIM migrations, which are triggered based on the request type. As a result,
+%Mantle has functionality for exchanging server utilization (CPU, network,
+%memory) and workload (tracks request types). MDHIM 
+%
+%
+%%This paper takes the API and load balancers designed in
+%%Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
+%%balancer for Ceph, and applies them to
+%%MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
+%%designed for HPC.
+%
+%
+%
+%Results should show, In order from most likely to least likely:
+%
+%\begin{enumerate}
+%
+%  \item HPC key-value store workloads are structured (because they are mostly
+%  workflows and simulations) that their job phases can be learned and exploited
+%  using dynamic load balancing policies.
+%
+%  \item HPC key-value store workloads are so structured that one
+%  policy-fits-all
+%
+%  \item HPC key-value store workloads are not structured enough to be learned
+%
+%  \item HPC key-value store workload hotspots/flash crowds are too fast to be
+%  exploited
+%
+%\end{enumerate}
