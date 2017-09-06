@@ -1,81 +1,120 @@
-\section{Background}
+\section{ParSplice Background}
 
-\subsection{ParSplice}
 \label{sec:parsplice}
 
 \begin{figure}[t]
   \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
   \caption{ParSplice is a ready-heavy HPC application where producers use a
-  database for consistency. Replacing the single-node database with HXHIM
-  improves performance with load balancing.
-  \label{fig:arch-parsplice}}
+  database for consistency. \label{fig:arch-parsplice}}
 \end{figure}
 
 
 ParSplice~\cite{perez:jctc20150parsplice} is a molecular dynamics simulation
-developed at LANL. It has 4 phases, as depicted in Figure~\ref{fig:arch-parsplice}:
+developed at LANL. Its phases are depicted in Figure~\ref{fig:arch-parsplice}:
 
 \begin{enumerate}
 
-  \item splicer (S) tells producers (P) to compute segments for state \(s_i\)
+  \item splicer tells producers to compute segments for state \(s_i\)
 
-  \item P`s pull initial coordinates \{\(x_i, y_i\)\} from database
+  \item producers pull initial coordinates \{\(x_i, y_i\)\} from database
 
-  \item a P inserts completed coordinates for segment \(s_i\) into database and
-  S broadcasts next segment(s) \(s_j\) 
+  \item a producer inserts completed coordinates for segment \(s_i\) into database and
+  splicer broadcasts next segment(s) \(s_j\) 
 
-  \item P`s pull new segment coordinates \{\(x_j, y_j\)\}
+  \item producer pull new segment coordinates \{\(x_j, y_j\)\}
 
 \end{enumerate}
 
-The database is single node (LevelDB or BerkeleyDB) with caches in front. Our
-goal is to replace this architecture with a distributed key-value store to
-solve the immediate sync problems that the ParSplice team is facting. Sliding
-in something like MDHIM~\cite{greenberg:hotstorage2015-mdhim} has the added
-benefit of enabling load balancing. ParSplice has distinct workload phases and
-a well-known keyspace (Figure~\ref{fig:methodology-keyspace}) so its
-performance should improve with better load balancing.
+The producers are stateless and pull intitial segment coordinates from the
+database every time they start generating segments. The computation can be
+parallelized by adding more LAMMPS engines or by adding workers to paralleilize
+a single LAMMPS engine.  Since workers do not maintain their own history, they
+end up pulling the same coordinates repeatedly.
 
-\subsection{MDHIM: Key-Value Store for HPC}
-\label{sec:hxhim}
+The database runs on a single node but ParSplice provisions 2 other nodes to
+act as caches. Producers contact this hierarchy of caches for their segment
+coordinates.  Writes are stored on each tier and reads traverse up the
+hierarchy until they find their data.
 
-\begin{figure}[tb]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-hxhim.png}\\
-  \caption{The MDHIM architecture.}
-  \label{fig:arch-hxhim}
-\end{figure}
+%Our
+%goal is to replace this architecture with a distributed key-value store to
+%solve the immediate sync problems that the ParSplice team is facting. Sliding
+%in something like MDHIM~\cite{greenberg:hotstorage2015-mdhim} has the added
+%benefit of enabling load balancing. ParSplice has distinct workload phases and
+%a well-known keyspace (Figure~\ref{fig:methodology-keyspace}) so its
+%performance should improve with better load balancing.
+%
+\subsection*{Input Deck}
 
-% What is MDHIM
-MDHIM is a key-value store designed for HPC architectures and multi-dimensional
-data. It is based off MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the
-multi-dimensional indexing middleware. Figure~\ref{fig:arch-hxhim} has a crude
-sketch of the MDHIM architecture. Each MPI rank has an instance of the
-application, which has the client library linked in. An MPI rank can also have
-a ``range server", which stores the key-value pairs in a local databse (either
-LevelDB or MySQL). Data is located with a consistent hash, which is
-configurable.
+% What it does
+We use ParSplice to simulate the states that molecules visit as nanoparticles
+grow. As the run progresses, particles become more unstable and visit more
+states.  The number of states in the simulation is controlled with growth rate
+and temperature parameters. The growth rate controls how big the nanoparticle
+is; smaller values grow faster but lengthen the time to generate segments. When
+the nanoparticles reach large sizes, the simulation slows down because the
+calculation is more expensive. The temperature controls the molecules' ability
+to transition to new states; higher temperatures transition more frequently
+because molecules have more energy.  Making the temperature too high has
+diminishing returns as molecules can visit any state with equal probability,
+reducing the size and number of the basins they explore.
 
-% What are the indexes?
-The primary and secondary indices shown on the right side of
-Figure~\ref{fig:arch-hxhim} are views of the data that the range server
-manages.  The primary index is the same hash used by the global partitioner.
-The secondary index or indices are user-defined tables organized in a different
-way from the primary index. The goal of the secondary indices is to speed up
-queries that need to aggregate dat ({\it e.g.} find the maximum values). In the
-example, the range server and the key in the primary index is located with a
-hash of the mesh location. The secondary index is organized by pressure, so
-queries asking for a certain atmosphere can be serviced in O\(1\), consisting
-of one lookup in the pressure index and one lookup into the primary index.
+% Affect on Storage
+The nanoparticle simulation stresses the database architecture of ParSplice. It
+visits more states than other input decks ({e.g.}, UO2) because the system uses
+a cheap potential. Changing the growth rate and temperature changes the size,
+shape, and locality of the database keyspace. Larger temperatures and smaller
+growth rates create hotter keys with smaller keyspaces.
 
-% Why is it tailored to HPC?
-MDHIM tailors its mechanisms and policies to HPC, showing improved performance
-over cloud-based key-value stores like Cassandra. It has cursor types for
-walking the key-value store, bulk operations for exploiting data locality,
-per-job server spawning, and pluggable backends for its local database and
-network type (infiniband/RDMA). Its policies are flexible, supporting
-customized partitioning strategies and user-defined secondary indices. This
-allows the system to choose whether to send load to the client or server.
+% Metric of goodness
+Our evaluation uses ``trajectory length'' as the goodness metric. This value is
+the duration of the overall trajectory produced by the system.  The
+relationship between wall clock time and trajectory length should be linear
+because it means the system is keeping up with the simulation load and is
+mirroring real time. We tested our own private cluster and a cluster of beefy
+nodes on CloudLab but the trajectory lengths were much smaller than our
+in-house Cray at LANL. 
 
+%\subsection{MDHIM: Key-Value Store for HPC}
+%\label{sec:hxhim}
+%
+%\begin{figure}[tb]
+%  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-hxhim.png}\\
+%  \caption{The MDHIM architecture.}
+%  \label{fig:arch-hxhim}
+%\end{figure}
+%
+%% What is MDHIM
+%MDHIM is a key-value store designed for HPC architectures and multi-dimensional
+%data. It is based off MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the
+%multi-dimensional indexing middleware. Figure~\ref{fig:arch-hxhim} has a crude
+%sketch of the MDHIM architecture. Each MPI rank has an instance of the
+%application, which has the client library linked in. An MPI rank can also have
+%a ``range server", which stores the key-value pairs in a local databse (either
+%LevelDB or MySQL). Data is located with a consistent hash, which is
+%configurable.
+%
+%% What are the indexes?
+%The primary and secondary indices shown on the right side of
+%Figure~\ref{fig:arch-hxhim} are views of the data that the range server
+%manages.  The primary index is the same hash used by the global partitioner.
+%The secondary index or indices are user-defined tables organized in a different
+%way from the primary index. The goal of the secondary indices is to speed up
+%queries that need to aggregate dat ({\it e.g.} find the maximum values). In the
+%example, the range server and the key in the primary index is located with a
+%hash of the mesh location. The secondary index is organized by pressure, so
+%queries asking for a certain atmosphere can be serviced in O\(1\), consisting
+%of one lookup in the pressure index and one lookup into the primary index.
+%
+%% Why is it tailored to HPC?
+%MDHIM tailors its mechanisms and policies to HPC, showing improved performance
+%over cloud-based key-value stores like Cassandra. It has cursor types for
+%walking the key-value store, bulk operations for exploiting data locality,
+%per-job server spawning, and pluggable backends for its local database and
+%network type (infiniband/RDMA). Its policies are flexible, supporting
+%customized partitioning strategies and user-defined secondary indices. This
+%allows the system to choose whether to send load to the client or server.
+%
 %\subsection{Comparing Mantle and MDHIM}
 %\begin{table*}
 %\centering
@@ -102,15 +141,7 @@ allows the system to choose whether to send load to the client or server.
 %\end{table*}
 %
 %% Why are the designed for the same type of workload?
-%The ``Both" column of Table~\ref{fig:arch-comparison} shows how Mantle and
-%MDHIM have similar designs. The workloads are very similar as the the services
-%respond to small and frequent requests, which results in hot spots and flash
-%crowds. As a result, popularity of the data, not the size, drives distribution
-%in both systems. Both workloads also have data locality so the systems have
-%mechanisms for leveraging requests with similar semantic meaning.  Finally, the
-%overall design of both systems is decentralized meaning that there is no
-%centralized scheduler and each server has an inconsistent global view.
-%
+
 %% What are the challenges?
 %Despite the similarities, integrating the Mantle API with MDHIM has both design
 %and technical challenges. Mantle is reactive to the workload as opposed to
