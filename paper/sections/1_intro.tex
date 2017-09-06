@@ -7,15 +7,15 @@
 %\end{enumerate}
 
 \begin{figure}[t]
-  \noindent\includegraphics[width=0.5\textwidth]{figures/futurework-regimes.png}\\
+  \noindent\includegraphics[width=0.5\textwidth]{figures/motivation-regimes.png}\\
   %\caption{Caching the 100 most recently accessed keys is sufficient for run 1
   %but more active keyspaces like run 0 need dynamic load balancing
-  %policies.\label{fig:futurework-regimes}}
+  %policies.\label{fig:motivation-regimes}}
   \caption{The keyspace activity for Parsplice runs using two different growth 
   rates.  The blue line show the rate at which EOM minima values are retrieved
   from the Key-value store (y1 axis) and the black points show the number of
   unique minima keys accessed in a 1 second sliding window. 
-  \label{fig:futurework-regimes}}
+  \label{fig:motivation-regimes}}
 \end{figure}
 
 The fine-grained data annotation capabilities provided by key-value storage is
@@ -32,7 +32,7 @@ shows the architecture of the ParSplice application.
 
 In this paper we present a detailed analysis of how the ParSplice application
 accesses EOM minima KV pairs over the course of a long running simulation
-across a variety of initial conditions. Figure~\ref{ig:futurework-regimes}
+across a variety of initial conditions. Figure~\ref{fig:motivation-regimes}
 shows that small changes to the rates at which new atoms enter the simulation,
 or the initial temperature at which the simulation begins can have a strong
 effect on the timing and frequency with which new EOM minima are discovered and
@@ -88,7 +88,7 @@ systems.
 %%% MSEVILLE
 %Key-Value stores scale because they support (1) fine scale annotation and (2)
 %flexible, extensible formats. Science applications are structured, entropy
-%increases over time (e.g., Figure~\ref{fig:futurework-regimes} shows key
+%increases over time (e.g., Figure~\ref{fig:motivation-regimes} shows key
 %distribution and key popularity changing over time). Our hypothesis is that
 %re-distributing keys requires dynamic load balancing policies, similiar to
 %distributed file systems.  A one-size-fits all policy is not sufficient. Our
