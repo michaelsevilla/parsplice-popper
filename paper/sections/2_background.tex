@@ -1,177 +1,66 @@
 \section{ParSplice Background}
-
 \label{sec:parsplice}
 
-\begin{figure}[t]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
-  \caption{ParSplice is a ready`-heavy HPC application where producers use a
-  database for consistency. \label{fig:arch-parsplice}}
-\end{figure}
-
-
-ParSplice~\cite{perez:jctc20150parsplice} is a molecular dynamics simulation
-developed at LANL. Its phases are depicted in Figure~\ref{fig:arch-parsplice}:
+ParSplice~\cite{perez:jctc20150parsplice} is an accelerated molecular dynamics
+(MD) simulation tool developed at LANL. Its phases are depicted in
+Figure~\ref{fig:arch-parsplice}:
 
 \begin{enumerate}
 
-  \item splicer tells producers to compute segments for state \(s_i\)
+  \item splicer tells producers to generate segments (short MD trajectory) in
+  states
 
-  \item producers pull initial coordinates \{\(x_i, y_i\)\} from database
+  \item producers read initial coordinates \{\(x_i,y_i\)\} from database 
 
-  \item a producer inserts completed coordinates for segment \(s_i\) into database and
-  splicer broadcasts next segment(s) \(s_j\) 
+  \item producer insert final coordinates for each segment \(s_i\) into database 
 
-  \item producer pull new segment coordinates \{\(x_j, y_j\)\}
-
+  \item repeat
 \end{enumerate}
 
-The producers are stateless and pull intitial segment coordinates from the
-database every time they start generating segments. The computation can be
-parallelized by adding more LAMMPS engines or by adding workers to paralleilize
-a single LAMMPS engine.  Since workers do not maintain their own history, they
-end up pulling the same coordinates repeatedly.
+The computation can be parallelized by adding more producers or by adding
+workers to parallelize individual producers.  The producers are stateless and
+read initial coordinates from the database every time they start
+generating segments. Since workers do not maintain their own history, they can
+end up reading the same coordinates repeatedly. To mitigate the consequences of such
+repeated reads, ParSplice provisions a hierarchy of nodes to act as caches that
+sit in front of the persistent database. Producers contact this hierarchy of
+caches for their segment coordinates. Writes are stored on each tier and reads
+traverse up the hierarchy until they find their data. 
 
-The database runs on a single node but ParSplice provisions 2 other nodes to
-act as caches. Producers contact this hierarchy of caches for their segment
-coordinates.  Writes are stored on each tier and reads traverse up the
-hierarchy until they find their data.
-
-%Our
-%goal is to replace this architecture with a distributed key-value store to
-%solve the immediate sync problems that the ParSplice team is facting. Sliding
-%in something like MDHIM~\cite{greenberg:hotstorage2015-mdhim} has the added
-%benefit of enabling load balancing. ParSplice has distinct workload phases and
-%a well-known keyspace (Figure~\ref{fig:methodology-keyspace}) so its
-%performance should improve with better load balancing.
-%
 \subsection*{Input Deck}
 
-% What it does
-We use ParSplice to simulate the states that molecules visit as nanoparticles
-grow. As the run progresses, particles become more unstable and visit more
-states.  The number of states in the simulation is controlled with growth rate
-and temperature parameters. The growth rate controls how big the nanoparticle
-is; smaller values grow faster but lengthen the time to generate segments. When
-the nanoparticles reach large sizes, the simulation slows down because the
-calculation is more expensive. The temperature controls the molecules' ability
-to transition to new states; higher temperatures transition more frequently
-because molecules have more energy.  Making the temperature too high has
-diminishing returns as molecules can visit any state with equal probability,
-reducing the size and number of the basins they explore.
+We use ParSplice to simulate the evolution of metallic nanoparticles that grow
+from the vapor phase. As the run progresses, the energy landscape of the system
+becomes more complex. Two factors control the number of entries in the
+database: the growth rate and the temperature. The growth rate controls how
+quickly new atoms are added to the nanoparticle: fast rates lead to
+non-equilibrium conditions, and hence increase the number of states that can be
+visited. However, as the particle grows, the simulation slows down because the
+calculations become more expensive, limiting the rate at which new states are
+visited. On the other hand, the temperature controls how easily a trajectory
+can jump from state to state; higher temperatures lead to more frequent
+transitions.
 
-% Affect on Storage
 The nanoparticle simulation stresses the database architecture of ParSplice. It
-visits more states than other input decks ({e.g.}, UO2) because the system uses
-a cheap potential. Changing the growth rate and temperature changes the size,
-shape, and locality of the database keyspace. Larger temperatures and smaller
-growth rates create hotter keys with smaller keyspaces.
+visits more states than other input decks because the system uses a cheap
+potential, has a small number of atoms, and a complex energy landscape with
+many accessible states. Changing the growth rate and temperature changes the
+size, shape, and locality of the database keyspace. Lower temperatures and
+smaller growth rates create hotter keys with smaller keyspaces as many segments
+are generated in the same set of states, before the trajectory can escape to a
+new region of state space.
 
-% Metric of goodness
-Our evaluation uses ``trajectory length'' as the goodness metric. This value is
-the duration of the overall trajectory produced by the system.  The
-relationship between wall clock time and trajectory length should be linear
-because it means the system is keeping up with the simulation load and is
-mirroring real time. We tested our own private cluster and a cluster of beefy
-nodes on CloudLab but the trajectory lengths were much smaller than our
-in-house Cray at LANL. 
+Our evaluation uses the total ``trajectory length" as the goodness metric. This
+value is the duration of the overall trajectory produced by the system. At
+ideal efficiency, the trajectory length should increase with the square root of
+the wall-clock time, since the wall-clock cost of timestepping the system by
+one simulation time unit increases in proportion of the total number of atoms,
+and hence of the total simulation time thus far. 
 
-%\subsection{MDHIM: Key-Value Store for HPC}
-%\label{sec:hxhim}
-%
-%\begin{figure}[tb]
-%  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-hxhim.png}\\
-%  \caption{The MDHIM architecture.}
-%  \label{fig:arch-hxhim}
-%\end{figure}
-%
-%% What is MDHIM
-%MDHIM is a key-value store designed for HPC architectures and multi-dimensional
-%data. It is based off MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the
-%multi-dimensional indexing middleware. Figure~\ref{fig:arch-hxhim} has a crude
-%sketch of the MDHIM architecture. Each MPI rank has an instance of the
-%application, which has the client library linked in. An MPI rank can also have
-%a ``range server", which stores the key-value pairs in a local databse (either
-%LevelDB or MySQL). Data is located with a consistent hash, which is
-%configurable.
-%
-%% What are the indexes?
-%The primary and secondary indices shown on the right side of
-%Figure~\ref{fig:arch-hxhim} are views of the data that the range server
-%manages.  The primary index is the same hash used by the global partitioner.
-%The secondary index or indices are user-defined tables organized in a different
-%way from the primary index. The goal of the secondary indices is to speed up
-%queries that need to aggregate dat ({\it e.g.} find the maximum values). In the
-%example, the range server and the key in the primary index is located with a
-%hash of the mesh location. The secondary index is organized by pressure, so
-%queries asking for a certain atmosphere can be serviced in O\(1\), consisting
-%of one lookup in the pressure index and one lookup into the primary index.
-%
-%% Why is it tailored to HPC?
-%MDHIM tailors its mechanisms and policies to HPC, showing improved performance
-%over cloud-based key-value stores like Cassandra. It has cursor types for
-%walking the key-value store, bulk operations for exploiting data locality,
-%per-job server spawning, and pluggable backends for its local database and
-%network type (infiniband/RDMA). Its policies are flexible, supporting
-%customized partitioning strategies and user-defined secondary indices. This
-%allows the system to choose whether to send load to the client or server.
-%
-%\subsection{Comparing Mantle and MDHIM}
-%\begin{table*}
-%\centering
-%\begin{tabular}[tb]{ r | l | l | l | l }
-%                       & 
-%                       & \multicolumn{1}{c|}{\centering Both} 
-%                       & \multicolumn{1}{c|}{\centering Mantle/CephFS}
-%                       & \multicolumn{1}{c}{\centering MDHIM}
-%                       \\\hline
-%  workload   & characteristics     & small/frequent requests  & data access            & data management \\
-%             & write-intensive     & partition across cluster & fragment directories*  & NOT IMPLEMENTED \\
-%             & read-intensive      & replicate across cluster & copy directories*      & NOT IMPLEMENTED \\\hdashline
-%  system     & measure workload    & yes                      & directory temperature  & range server counts \\
-%  mechanisms & measure utilization & yes                      & CPU, network, memory   & range server buffer size \\
-%             & migrate resources   & almost                   & \texttt{export\_dir()} & \texttt{mdhimB}\{\texttt{Get}, \texttt{Put}\}\texttt{()} \\
-%             & partition resources & yes                      & subtrees \& dirfrags   & secondary index, cursor type, bulk operations\\\hdashline
-%  migration  & interval            & configurable             & every 10 seconds       & every query \\
-%  decisions  & global state        & decentralized decisions  & heartbeats for metrics & NOT IMPLEMENTED \\
-%  \multicolumn{5}{c}{}\\
-%  \multicolumn{5}{c}{\tiny *Mechanisms implemented in CephFS, not integrated into Mantle}
-%\end{tabular}
-%\caption{Comparing the design goals and implementatons of Mantle and MDHIM.}
-%\label{fig:arch-comparison}
-%\end{table*}
-%
-%% Why are the designed for the same type of workload?
 
-%% What are the challenges?
-%Despite the similarities, integrating the Mantle API with MDHIM has both design
-%and technical challenges. Mantle is reactive to the workload as opposed to
-%MDHIM migrations, which are triggered based on the request type. As a result,
-%Mantle has functionality for exchanging server utilization (CPU, network,
-%memory) and workload (tracks request types). MDHIM 
-%
-%
-%%This paper takes the API and load balancers designed in
-%%Mantle~\cite{sevilla:sc15-mantle}, the programmabile file system metadata load
-%%balancer for Ceph, and applies them to
-%%MDHIM~\cite{greenberg:hotstorage2015-mdhim}, the distributed key-value store
-%%designed for HPC.
-%
-%
-%
-%Results should show, In order from most likely to least likely:
-%
-%\begin{enumerate}
-%
-%  \item HPC key-value store workloads are structured (because they are mostly
-%  workflows and simulations) that their job phases can be learned and exploited
-%  using dynamic load balancing policies.
-%
-%  \item HPC key-value store workloads are so structured that one
-%  policy-fits-all
-%
-%  \item HPC key-value store workloads are not structured enough to be learned
-%
-%  \item HPC key-value store workload hotspots/flash crowds are too fast to be
-%  exploited
-%
-%\end{enumerate}
+\begin{figure}[t]
+  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
+  \caption{ParSplice is a read-heavy HPC application where producers use a
+  database for consistency. \label{fig:arch-parsplice}}
+\end{figure}
+
