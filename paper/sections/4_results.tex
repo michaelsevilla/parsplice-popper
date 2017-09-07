@@ -228,13 +228,12 @@ we should use for different job permutations.
 \section{Using ML for the Keyspace}
 
 We proved in the previous section that an optimial policy, based on the read
-burstiness at the beginning and small keyspace at the end of the run,  exists
-for a 100K growth rate on 8 nodes, but we cannot re-do this analysis for every
-workload, system, and parameter permutation.  Fortunately,
-Section~\S\ref{sec:results} shows that the keyspace size and activity is
-structured. so rather than finding thresholds by hand again for every cluster
-size, growth rate, and temperature, in this section we use machine learning to
-inform the Mantle policy engine.
+burstiness at the beginning of the run,  exists for a 100K growth rate on 8
+nodes, but we cannot re-do this analysis for every workload, system, and
+parameter permutation.  Fortunately, Section~\S\ref{sec:results} shows that the
+keyspace size and activity is structured. so rather than finding policies hand
+again for every cluster size, growth rate, and temperature, in this section we
+use machine learning to inform the Mantle policy engine.
 
 % implementation: 
 We feed the read request rate from the 100K and 1M runs in
@@ -264,14 +263,14 @@ third regime that corresponds to the keyspace size in our performance counters.
 % regime, suggests proper key values.
 The algorithm properly identifies the 4 workload phases: the plateau of
 redundant reads, the phase with a large decrease in request rate, and the two
-plateaus of steady read requests. It also plicks different timestamps for the
+plateaus of steady read requests. It also picks different timestamps for the
 start of the third regime, which aligns with our keyspace analysis and our
 assertion that the growth parameters affect how long it takes the workload to
 reach a certain phase.  Finally, the algorithm picks reasonable values for the
 key cache size. The 100K growth rate selects a 55K cache size, which is between
-our benchmarked optimal threshold for both the high watermark value chosen to
+our benchmarked optimal threshold for the high watermark value chosen to
 absorb the read burst (100K) and the lower cache size we limit the system to
-after the initial burst (10K), This result both reaffirms the results from the
+after the initial burst (10K). This result both reaffirms the results from the
 previous section and provides hope that we can avoid lengthy paramaters sweeps
 for ParSplice in the future.
 
