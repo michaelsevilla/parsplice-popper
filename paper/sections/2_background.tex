@@ -2,30 +2,29 @@
 \label{sec:parsplice}
 
 ParSplice~\cite{perez:jctc20150parsplice} is an accelerated molecular dynamics
-(MD) simulation tool developed at LANL. Its phases are depicted in
-Figure~\ref{fig:arch-parsplice}:
+(MD) simulation tool developed at LANL. Its phases are:
+%Figure~\ref{fig:arch-parsplice}:
 
 \begin{enumerate}
 
-  \item splicer tells producers to generate segments (short MD trajectory) in
-  states
+  \item splicer tells workers to generate segments (short MD trajectory) for
+  specific states
 
-  \item producers read initial coordinates \{\(x_i,y_i\)\} from database 
+  \item workers read initial coordinates for their assigned segment from database 
 
-  \item producer insert final coordinates for each segment \(s_i\) into database 
+  \item upon completion, workers insert final coordinates for each segment into
+  database, and wait for new segment assignment
 
-  \item repeat
 \end{enumerate}
 
-The computation can be parallelized by adding more producers or by adding
-workers to parallelize individual producers.  The producers are stateless and
-read initial coordinates from the database every time they start
-generating segments. Since workers do not maintain their own history, they can
-end up reading the same coordinates repeatedly. To mitigate the consequences of such
+The computation can be parallelized by adding more workers or by adding worker
+tasks to parallelize individual workers.  The workers are stateless and read
+initial coordinates from the database every time they start generating
+segments. Since worker tasks do not maintain their own history, they can end up
+reading the same coordinates repeatedly. To mitigate the consequences of these
 repeated reads, ParSplice provisions a hierarchy of nodes to act as caches that
-sit in front of the persistent database. Producers contact this hierarchy of
-caches for their segment coordinates. Writes are stored on each tier and reads
-traverse up the hierarchy until they find their data. 
+sit in front of the persistent database.  Writes are stored on each tier and
+reads traverse up the hierarchy until they find their data. 
 
 \subsection*{Input Deck}
 
@@ -54,13 +53,10 @@ Our evaluation uses the total ``trajectory length" as the goodness metric. This
 value is the duration of the overall trajectory produced by the system. At
 ideal efficiency, the trajectory length should increase with the square root of
 the wall-clock time, since the wall-clock cost of timestepping the system by
-one simulation time unit increases in proportion of the total number of atoms,
-and hence of the total simulation time thus far. 
+one simulation time unit increases in proportion of the total number of atoms.
 
-
-\begin{figure}[t]
-  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
-  \caption{ParSplice is a read-heavy HPC application where producers use a
-  database for consistency. \label{fig:arch-parsplice}}
-\end{figure}
-
+%\begin{figure}[t]
+%  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
+%  \caption{ParSplice is a read-heavy HPC application where workers use a
+%  database for consistency. \label{fig:arch-parsplice}}
+%\end{figure}
