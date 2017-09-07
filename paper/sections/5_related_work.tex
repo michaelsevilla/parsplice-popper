@@ -63,21 +63,11 @@ spawning, and pluggable backends for its local database and network type
 (iband/RDMA). Its policies are extenible, supporting customized partitioning
 strategies and user-decondary indices.
 
-\section{Conclusion}
+%\begin{enumerate}
+%  \item analysis of Parsplice keyspace
+%  \item using a modern distributed kv store
+%  \item positive effects of Mantle
+%\end{enumerate}
 
-Load balancing is a well-known technique for alleviating load and improving
-performance, yet finding the best policies for applications is still a
-hands-on, tedious process. If a load balancing module were to be accepted into
-a suite of services like the Mochi project, it must transcend domains and be
-useful to a wide-range of applications. In this paper, we present the framework
-for such a service which (1) helps administrators explore the techniques for
-informing load balancing, (2) supports dynamic policies for quickly changing
-workloads and higher level intelligence engines like machine learning, and (3)
-comes packaged with balancers that work well for both key-value stores and file
-system metadata. We demonstrate (1) with a keyspace analysis for Parsplice and
-use our findings to design a dynamic load balancing policy that improves
-resource utilization.  Finally, to drive the policy engine designed in (2), we
-show that a single policy is inadequate and that Mantle is flexible enough to
-explore policies generated with machine learning. It is our hope that the
-introduction of the Mantle approach encourages the use of machine learning and
-auto-tuning for policy design in future storage systems.
+
+\section{Conclusion}
