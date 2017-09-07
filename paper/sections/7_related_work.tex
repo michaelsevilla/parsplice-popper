@@ -3,7 +3,7 @@
 Key-value storage organizations for scientific applications is a field gaining
 rapid interest. In particular, the analysis of the ParSplice keyspace and the
 development of an appropriate scheme for load balancing is a direct response to
-a case study for computation cacaching in scientific
+a case study for computation caching in scientific
 applications~\cite{jenkins:ipdsw17-mochi}. In that work the authors motivated
 the need for a flexible load balancing \emph{microservice} to efficiently scale
 a memoization microservice. Our work is also heavily influenced by the
@@ -14,11 +14,11 @@ than has traditionally been performed with distributed file systems.
 \subsubsection*{File System Metadata}
 
 State-of-the-art distributed file systems partition write-heavy workloads and
-replicate read-heavy worklods.  IndexFS~\cite{ren:sc2014-indexfs} partitions
+replicate read-heavy workloads.  IndexFS~\cite{ren:sc2014-indexfs} partitions
 directories and clients write to different partitions by grabbing leases and
 caching ancestor metadata for path traversal. ShardFS takes the replication
 approach to the extreme by copying all directory state to all nodes. The Ceph
-file system~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph} employs both
+file system (CephFS)~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph} employs both
 techniques to a lesser extent; directories can be replicated or sharded but the
 caching and replication policies are controlled with tunable parameters.
 Despite the obvious benefits of these protocols, these systems still need to be
@@ -39,8 +39,8 @@ data systems systems~\cite{herodotou_starfish_2011}, and
 databases~\cite{schnaitter_index_2009}.  Like our work, these systems focus on
 the physical design of the storage ({\it e.g.} cache size) but since we focused
 on a relatively small set of parameters (cache size, migration tresholds), we
-did not need anything as sophisticated as the genetic algortihm used
-in~\ref{behzad:sc2013-autotuning}.  We cannot drop these techniques into
+did not need anything as sophisticated as the genetic algorithm used
+in~\cite{behzad:sc2013-autotuning}.  We cannot drop these techniques into
 ParSplice because the magnitude and speed of the workload hotspots/flash crowds
 makes existing approaches less applicable. 
 
@@ -52,6 +52,6 @@ for migration already implemented.  MDHIM tailors its mechanisms and policies
 to HPC, showing improved performance over cloud-based key-value stores like
 Cassandra~\cite{lakshman_cassandra_2010}. It has cursor types for walking the
 key-value store, bulk operations for exploiting data locality, per-job server
-spawning, and pluggable backends for its local database and network type
-(iband/RDMA). Its policies are extenible, supporting customized partitioning
-strategies and user-decondary indices.
+spawning, and pluggable back-ends for its local database and network type
+(infiniband/RDMA). Its policies are extensible, supporting customized partitioning
+strategies and user-defined secondary indices.

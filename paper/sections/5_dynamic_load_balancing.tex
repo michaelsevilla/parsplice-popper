@@ -19,24 +19,24 @@ read requests arrive at 750 reads per second in addition to the writes that
 land in each tier (about 300 puts/second, some redundant). This traffic
 triggers a LevelDB compaction and reads block and eventually pile up, resulting
 in very slow progress. Traces verify this hypothesis and show reads getting
-backed up as the read/write ratio explodes. To recap, small caches incurr too
+backed up as the read/write ratio explodes. To recap, small caches incur too
 much load on persistent database  at the beginning of the run but smaller caches should
 suffice after the initial read flash crowd passes because the keyspace is far
 less active. This suggests a two-part load balancing policy.
 
 % what is mantle
 To explore dynamic load balancing policies ({\it i.e.} policies that change
-during the run), we use the Mantle approach.  Mantle is a framework buit on the
-Ceph file system that lets admnistrators control file system metadata load
+during the run), we use the Mantle approach.  Mantle is a framework built on the
+Ceph file system that lets administrators control file system metadata load
 balancing policies. The basic premise is that load balancing policies can be
 expressed with a simple API consisting of ``when", ``where", and ``how much".
-The succinctness of the API lets users inject muitiple, dynamic policies.
+The succinctness of the API lets users inject multiple, dynamic policies.
 
 % Why is this a good idea
-Although ParSplice does not use a distibuted file system, its workload is very
-similiar because the minima key-value store responds to small and frequent
+Although ParSplice does not use a distributed file system, its workload is very
+similar because the minima key-value store responds to small and frequent
 requests, which results in hot spots and flash crowds.  Distributed file
-systems solve similiar issues and finding optimal ways to measure, migrate, and
+systems solve similar issues and finding optimal ways to measure, migrate, and
 partition metadata load has been shown to lead to large performance gains and
 more scalable file systems~\cite{zheng:pdsw2014-batchfs,
 zheng:pdsw2015-deltafs, grider:pdsw2015-marfs, ren:sc2014-indexfs,
@@ -67,7 +67,7 @@ beginning of the run. Once triggered, keys are evicted to bring the size of the
 cache down to the threshold and the least recently keys are actively evicted.
 In that bar chart, the cache sizes are along the \(x\)-axis.
 
-% results: same level of performance can be achived 
+% results: same level of performance can be achieved 
 The dynamic policies show better performance than the single \(n\) key
 policies. The performance and memory utilization for 100K is the same as the
 100K bar in the middle graphs but the rest reduce the size of the keyspace
@@ -107,7 +107,7 @@ different dynamic load balancing policy.
   runtime of 2.5 hours. \label{fig:methodology-trajectory}}
 \end{figure}
 
-% wht the result is still valie
+% but the result is still valid
 Despite these caveats, the result is still valid: we found a dynamic load
 balancing policy that absorbs the cost of a high read throughput on a small
 keyspace and reduces the memory pressure for a 2.5 hour run. Our experiments

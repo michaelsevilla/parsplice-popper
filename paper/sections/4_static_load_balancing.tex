@@ -1,7 +1,7 @@
 \section{Static Load Balancing}
 \label{sec:static-load-balancing}
 
-% techinical details
+% technical details
 In the original ParSplice implementation, each cache node as much memory as it
 wants to store segment coordinates. We limit the size of the cache using an LRU
 eviction policy, where the penalty for a cache miss is retrieving the data from
@@ -12,7 +12,7 @@ otherwise and it reduces the overhead of key eviction.
 % results: cache size trade-offs
 \begin{figure}[t]
   \noindent\includegraphics[width=0.4\textwidth]{figures/methodology-tradeoff.png}\\
-  \caption{The performance and resource utilzation trade-off for different
+  \caption{The performance and resource utilization trade-off for different
   cache sizes, which are enumerated along the \(x\) axis. ``Baseline" is
   ParSplice unmodified and the ``Static  Policies" limit the size of the
   cache to demonstrate the memory savings of smaller keyspaces on cache nodes.
@@ -29,7 +29,7 @@ deviation of 3 runs.
 
 % results: raw numbers
 Although the keyspace grows to 150K, a 100K key cache achieves 99\% of the
-peformance. Decreasing the cache degrades performance and predictability.
+performance. Decreasing the cache degrades performance and predictability.
 While this result is not unexpected, it nonetheless achieves our goal of
 showing the benefits of load balancing keys across nodes and that smaller
 caches on each node are an effective way to save memory without completely

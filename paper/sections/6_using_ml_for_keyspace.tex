@@ -1,12 +1,12 @@
 \section{Using ML for the Keyspace}
 \label{sec:ml-for-the-keyspace}
 
-We proved in the previous section that an optimial policy, based on the read
+We proved in the previous section that an optimal policy, based on the read
 burstiness at the beginning of the run,  exists for a 100K growth rate on 8
 nodes, but we cannot re-do this analysis for every workload, system, and
 parameter permutation.  Fortunately,
 Section~\S\ref{sec:parsplice-keyspace-analysis} shows that the keyspace size
-and activity is structured. so rather than finding policies by hand again for
+and activity is structured. Rather than finding policies by hand again for
 every cluster size, growth rate, and temperature, in this section we use
 machine learning to inform the Mantle policy engine.  Machine learning is good
 at two things: handling large design spaces and matching patterns. Our keyspace
@@ -39,7 +39,7 @@ Figure~\ref{fig:motivation-regimes}. We also annotate the graphs with the
 suggested cache size, which is calculated by looking up the timestamp for the
 third regime that corresponds to the keyspace size in our performance counters.
 
-% results: 1. ideentifies 4 phases, 2. picks different timestamps for the third
+% results: 1. identifies 4 phases, 2. picks different timestamps for the third
 % regime, suggests proper key values.
 The algorithm properly identifies the 4 workload phases: the plateau of
 redundant reads, the phase with a large decrease in request rate, and the two
@@ -51,7 +51,7 @@ key cache size. The 100K growth rate selects a 55K cache size, which is between
 our benchmarked optimal threshold for the high watermark value chosen to
 absorb the read burst (100K) and the lower cache size we limit the system to
 after the initial burst (10K). This result both reaffirms the results from the
-previous section and provides hope that we can avoid lengthy paramaters sweeps
+previous section and provides hope that we can avoid lengthy parameters sweeps
 for ParSplice in the future.
 
 \begin{figure}[t]

@@ -7,7 +7,7 @@ performance counters track ParSplice activities while keyspace counters track
 which keys were being accessed by the ParSplice ranks. Because the keyspace
 counters have high overhead we only turn them on for the keyspace analysis.
 
-The cache hierarchy was unmodified but for the backend persistent database, we
+The cache hierarchy was unmodified but for the back-end persistent database, we
 replaced BerkeleyDB on NFS with LevelDB on Lustre. Original ParSplice
 experiments showed that BerkeleyDB's syncs caused reads/writes to bottleneck on
 the persistent database node. We also use Riak's customized
@@ -30,7 +30,7 @@ commodity clusters has more to do with memory/PCI bandwidth than network.
   \noindent\includegraphics[width=0.4\textwidth]{figures/methodology-keyspace.png}\\
   \caption{The keyspace size is small but must satisfy many reads as workers
   calculate new segments. Based on these trends, it is likely that we will need
-  more than one node to manage segment corodinates when we scale the system or jobs up.
+  more than one node to manage segment coordinates when we scale the system or jobs up.
   \label{fig:methodology-keyspace}}
 \end{figure}
 
@@ -78,11 +78,11 @@ locality of computation: worker tasks stuck in state basins generate segments wi
 similar coordinates. The growth rate, temperature, and number of workers
 changes that locality, which has an effect on the structure of the keyspace.
 Figure~\ref{fig:methodology-keys} shows that the number of reads changes with
-different growth rates, but that spatial locality is similiar ({\it e.g.}, some
-keys are stil \(5\times\) more popular than others).
+different growth rates, but that spatial locality is similar ({\it e.g.}, some
+keys are still \(5\times\) more popular than others).
 Figure~\ref{fig:futurework-regimes} shows how entropy for different growth
 rates has temporal locality, as the reads per second for 1M looks like the
 reads per second for 100K stretched out along the time axis.  Trends also exist
-for temperature and number of workers but are ommitted here for space. This
+for temperature and number of workers but are omitted here for space. This
 structure means that we can learn the regimes and adapt the storage system to
 it. 
