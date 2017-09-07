@@ -2,8 +2,9 @@
 \label{sec:parsplice}
 
 ParSplice~\cite{perez:jctc20150parsplice} is an accelerated molecular dynamics
-(MD) simulation tool developed at LANL. Its phases are:
-%Figure~\ref{fig:arch-parsplice}:
+(MD) simulation tool developed at LANL. It is part of the Exascale Computing
+Project~\ref{CITE} and has a significant financial backing from the DOE sphere.
+Its phases are:
 
 \begin{enumerate}
 
@@ -54,9 +55,3 @@ value is the duration of the overall trajectory produced by the system. At
 ideal efficiency, the trajectory length should increase with the square root of
 the wall-clock time, since the wall-clock cost of timestepping the system by
 one simulation time unit increases in proportion of the total number of atoms.
-
-%\begin{figure}[t]
-%  \noindent\includegraphics[width=19pc,angle=0]{figures/arch-parsplice.png}\\
-%  \caption{ParSplice is a read-heavy HPC application where workers use a
-%  database for consistency. \label{fig:arch-parsplice}}
-%\end{figure}

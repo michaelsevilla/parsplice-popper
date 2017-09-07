@@ -6,6 +6,7 @@
 
 % Copyright
 \setcopyright{none}
+\settopmatter{printacmref=false}
 %\setcopyright{acmcopyright}
 %\setcopyright{acmlicensed}
 %%\setcopyright{rightsretained}
@@ -15,21 +16,18 @@
 %\setcopyright{cagovmixed}
 
 
-% DOI
-\acmDOI{10.475/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/08/06}
-
-%:Conference
-\acmConference[WOODSTOCK'97]{ACM Woodstock conference}{July 1997}{El
-  Paso, Texas USA} 
-\acmYear{1997}
-\copyrightyear{2016}
-
-
-\acmArticle{4}
-\acmPrice{15.00}
+%% DOI
+%\acmDOI{10.475/123_4}
+%
+%% ISBN
+%\acmISBN{123-4567-24-567/08/06}
+%
+%%:Conference
+\acmConference[]{}{}{}
+%\copyrightyear{2016}
+%
+%\acmArticle{4}
+%\acmPrice{15.00}
 
 % These commands are optional
 %\acmBooktitle{Transactions of the ACM Woodstock conference}
@@ -39,55 +37,34 @@
 
 
 \begin{document}
-\title{Towards Dynamic Load Balancing Policies in Software-Defined Storage}
+\title{Towards Dynamic Load Balancing Policies\\in Software-Defined Storage}
 %\titlenote{Produces the permission block, and
 %  copyright information}
 %\subtitle{Extended Abstract}
 %\subtitlenote{The full version of the author's guide is available as
 %  \texttt{acmart.pdf} document}
 
+\author{Michael A. Sevilla, Carlos Maltzahn}
+\affiliation{\institution{University of California, Santa Cruz}}
+\email{{msevilla, carlosm}@soe.ucsc.edu}
 
-\author{Michael A. Sevilla}
-\authornote{Work done while interning at LANL.}
-\affiliation{%
-  \institution{University of California, Santa Cruz}
-}
-\email{msevilla@soe.ucsc.edu}
-
-\author{Brad Settlemyer}
-\affiliation{%
-  \institution{Los Alamos National Lab}
-}
-\email{bws@lanl.gov}
-
-\author{Carlos Maltzahn}
-\affiliation{%
-  \institution{University of California, Santa Cruz}
-}
-\email{carlosm@soe.ucsc.edu}
-
-\author{Danny Perez}
-\affiliation{%
-  \institution{Los Alamos National Lab}
-}
-\email{danny_perez@lanl.gov}
-
-\author{David Rich}
-\affiliation{\institution{Los Alamos National Lab}}
-\email{dor@lanl.gov}
-
-\author{Galen Shipman}
-\affiliation{\institution{Los Alamos National Lab}}
-\email{gshipman@lanl.gov}
+\author{Brad Settlemyer, Danny Perez, David Rich, Galen Shipman (LANL)}
+\email{{bws, danny_perez, dor, gshipman}@lanl.gov}
 
 \begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed enim libero,
-vestibulum quis efficitur et, commodo vitae lorem. Proin metus odio, molestie
-sit amet magna at, eleifend lobortis neque. Mauris placerat arcu ac lacus
-venenatis auctor. Aliquam rutrum non tellus vitae tempor. Aliquam erat
-volutpat. Duis enim leo, condimentum tincidunt posuere nec, ultricies vitae
-nisi. Aliquam efficitur massa felis, in tempus ante pretium ac. Cras eget
-luctus felis, id eleifend nulla.
+
+Using a detailed keyspace analysis we show the need for a distributed, load
+balancing key-value store for the ParSplice molecular dynamics simulation.  To
+enable this, we use the Mantle framework to change load balancing policies and
+to quantify performance. We then show the inefficiencies of load balancing
+using a single policy by designing a two-part, dynamic policy that achieves
+93\% efficiency with less than 1\% of the memory usage. Finding this policy was
+tedious and done by hand, so we also present a machine learning approach that
+has the potential to feed into our load balancing policy engine.  The paper
+shows the usefulness of the Mantle approach for key-value store workloads and
+it our hope that the initial steps we have taken designing dynamic load
+balancing policies jump starts the community along similar efforts.
+
 \end{abstract}
 
 %
@@ -133,9 +110,12 @@ luctus felis, id eleifend nulla.
 
 \input{./sections/1_intro}
 \input{./sections/2_background}
-\input{./sections/3_methodology}
-\input{./sections/4_results}
-\input{./sections/5_conclusion}
+\input{./sections/3_keyspace_analysis}
+\input{./sections/4_static_load_balancing}
+\input{./sections/5_dynamic_load_balancing}
+\input{./sections/6_using_ml_for_keyspace}
+\input{./sections/7_related_work}
+\input{./sections/8_conclusion}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references} 

@@ -1,31 +1,24 @@
 \section{Related Work}
 
-The motivation for this work is the Mochi project, which is trying to move away
-from application-specific sofware stacks by pushing for re-use and composable
-services.  Applications need more services to work and they are demanding a
-richer set of functionality, so the hope is to share these building blocks
-(e.g., Margo transport layer, SPINDLE library, MDHIM kv-store, etc.) across HPC
-applications.  Malacology takes a similar approach to storage, where internal
-functionality of the storage system is exposed to applications so they do not
-have to bolt-on services or re-implement functionality themselves. Load
-balancing is a microservice that we think would be a useful part of the Mochi
-suite and Mantle seems like a good fit because it has already
-identified balancers that work well for file systems. Here we try to show that
-the balancers and the Mantle approach are also applicable to key-value store
-workloads. 
+Key-value storage organizations for scientific applications is a field gaining
+rapid interest. In particular, the analysis of the ParSplice keyspace and the
+development of an appropriate scheme for load balancing is a direct response to
+a case study for computation cacaching in scientific
+applications~\cite{jenkins:ipdsw17-mochi}. In that work the authors motivated
+the need for a flexible load balancing \emph{microservice} to efficiently scale
+a memoization microservice. Our work is also heavily influenced by the
+Malacology project~\cite{sevilla:eurosys17-malacology} which seeks to provide
+fundamental services (e.g. write-ahead logging) at a much finer granularity
+than has traditionally been performed with distributed file systems.  
 
-\subsubsection*{File System Metadata} Our focus is the load balancing of a
-distributed key-value store. For inspiration, we focused on file system
-metadata load balancing because the hotspots and flash crowds of redundant
-operations we were seeing did not match well with the keyspace partitioning
-techniques of traditional databases or key-value stores.
+\subsubsection*{File System Metadata}
 
 State-of-the-art distributed file systems partition write-heavy workloads and
-replicate read-heavy worklods.  IndexFS~\cite{ren:sc2014-indexfs}
-partitions directories and clients write to different partitions by grabbing
-leases and caching ancestor metadata for path traversal. ShardFS takes the
-replication approach to the extreme by copying all directory state to all
-nodes. CephFS~\ref{weil:sc2004-dyn-metadata, weil:osdi2006-ceph} employs both
+replicate read-heavy worklods.  IndexFS~\cite{ren:sc2014-indexfs} partitions
+directories and clients write to different partitions by grabbing leases and
+caching ancestor metadata for path traversal. ShardFS takes the replication
+approach to the extreme by copying all directory state to all nodes. The Ceph
+file system~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph} employs both
 techniques to a lesser extent; directories can be replicated or sharded but the
 caching and replication policies are controlled with tunable parameters.
 Despite the obvious benefits of these protocols, these systems still need to be
@@ -62,12 +55,3 @@ key-value store, bulk operations for exploiting data locality, per-job server
 spawning, and pluggable backends for its local database and network type
 (iband/RDMA). Its policies are extenible, supporting customized partitioning
 strategies and user-decondary indices.
-
-%\begin{enumerate}
-%  \item analysis of Parsplice keyspace
-%  \item using a modern distributed kv store
-%  \item positive effects of Mantle
-%\end{enumerate}
-
-
-\section{Conclusion}
