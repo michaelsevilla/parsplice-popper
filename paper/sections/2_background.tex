@@ -4,14 +4,15 @@
 ParSplice~\cite{perez:jctc20150parsplice} is an accelerated molecular dynamics
 (MD) simulation package developed at LANL. It is part of the Exascale Computing
 Project\footnote{http://www.exascale.org/bdec/} and is important to LANL's
-Materials for the Future science mission. Its phases are:
+Materials for the Future initiative. Its phases are:
 
 \begin{enumerate}
 
-  \item A splicer tells workers to generate segments (short MD trajectory) for
+  \item a splicer tells workers to generate segments (short MD trajectory) for
   specific states
 
-  \item workers read initial coordinates for their assigned segment from data store
+  \item workers read initial coordinates for their assigned segment from data
+  store; the key-value pair is (state ID, coordinate)
 
   \item upon completion, workers insert final coordinates for each segment into
   data store, and wait for new segment assignment
@@ -24,13 +25,13 @@ initial coordinates from the data store each time they begin generating
 segments. Since worker tasks do not maintain their own history, they can end up
 reading the same coordinates repeatedly. To mitigate the consequences of these
 repeated reads, ParSplice provisions a hierarchy of nodes to act as caches that
-sit in front of the persistent data store.  Values are written to each tier and
-reads traverse up the hierarchy until they find the data. 
+sit in front of a single node persistent database.  Values are written to each
+tier and reads traverse up the hierarchy until they find the data. 
 
-ParSplice simulates the evolution of metallic nanoparticles that grow
+We use ParSplice to simulate the evolution of metallic nanoparticles that grow
 from the vapor phase. As the run progresses, the energy landscape of the system
 becomes more complex. Two domain factors control the number of entries in the
-data store: the growth rate, \(\Delta\), and the temperature. The growth rate controls how
+data store: the growth rate and the temperature. The growth rate controls how
 quickly new atoms are added to the nanoparticle: fast growth rates lead to
 non-equilibrium conditions, and hence increase the number of states that can be
 visited. However, as the particle grows, the simulation slows down because the
@@ -39,17 +40,17 @@ visited. On the other hand, the temperature controls how easily a trajectory
 can jump from state to state; higher temperatures lead to more frequent
 transitions.
 
-The nanoparticle simulation stresses the data store architecture of ParSplice. It
-visits more states than other input decks because the system uses a cheap
-potential, has a small number of atoms, and a complex energy landscape with
-many accessible states. Changing growth rates and temperature changes the
-size, shape, and locality of the data store keyspace. Lower temperatures and
-smaller growth rates create hotter keys with smaller keyspaces as many segments
-are generated in the same set of states, before the trajectory can escape to a
-new region of state space.
+The nanoparticle simulation stresses the data store architecture of ParSplice.
+It visits more states than other input decks because the system uses a cheap
+potential, has a small number of atoms, and operates in a complex energy
+landscape with many accessible states. Changing growth rates and temperature
+alters the size, shape, and locality of the data store keyspace. Lower
+temperatures and smaller growth rates create hotter keys with smaller keyspaces
+as many segments are generated in the same set of states before the trajectory
+can escape to a new region of state space.
 
 Our evaluation uses the total ``trajectory length" as the goodness metric. This
-value is the duration of the overall trajectory produced by the system. At
+value is the duration of the overall trajectory produced by ParSplice. At
 ideal efficiency, the trajectory length should increase with the square root of
 the wall-clock time, since the wall-clock cost of time-stepping the system by
 one simulation time unit increases in proportion of the total number of atoms.

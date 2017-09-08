@@ -8,25 +8,26 @@ applications~\cite{jenkins:ipdsw17-mochi}. In that work the authors motivated
 the need for a flexible load balancing \emph{microservice} to efficiently scale
 a memoization microservice. Our work is also heavily influenced by the
 Malacology project~\cite{sevilla:eurosys17-malacology} which seeks to provide
-fundamental services (e.g. write-ahead logging) at a much finer granularity
-than has traditionally been performed with distributed file systems.  
+fundamental services from within the storage system ({\it e.g.}, consensus) to
+the application.
 
 State-of-the-art distributed file systems partition write-heavy workloads and
-replicate read-heavy workloads.  IndexFS~\cite{ren:sc2014-indexfs} partitions
-directories and clients write to different partitions by grabbing leases and
-caching ancestor metadata for path traversal. ShardFS takes the replication
-approach to the extreme by copying all directory state to all nodes. The Ceph
-file system (CephFS)~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph}
-employs both techniques to a lesser extent; directories can be replicated or
-sharded but the caching and replication policies are controlled with tunable
-parameters.  Despite the obvious benefits of these protocols, these systems
-still need to be tuned by hand with {\it ad-hoc} policies designed for specific
-applications.  Setting policies for migrations is arguably more difficult than
-adding the migration mechanisms themselves.  For example, IndexFS and CephFS
-use the GIGA+~\cite{patil:fast2011-giga} technique for partitioning directories
-at a predefined threshold. Mantle makes headway in this space by providing a
-framework for exploring these policies, but does not attempt anything more
-sophisticated (e.g., machine learning or autotuning) to create these policies. 
+replicate read-heavy workloads, similar to the approach we are advocating
+here.  IndexFS~\cite{ren:sc2014-indexfs} partitions directories and clients
+write to different partitions by grabbing leases and caching ancestor metadata
+for path traversal. ShardFS takes the replication approach to the extreme by
+copying all directory state to all nodes. The Ceph file system
+(CephFS)~\cite{weil:sc2004-dyn-metadata, weil:osdi2006-ceph} employs both
+techniques to a lesser extent; directories can be replicated or sharded but the
+caching and replication policies are controlled with tunable parameters.  These
+systems still need to be tuned by hand with {\it ad-hoc} policies designed for
+specific applications.  Setting policies for migrations is arguably more
+difficult than adding the migration mechanisms themselves.  For example,
+IndexFS/CephFS use the GIGA+~\cite{patil:fast2011-giga} technique for
+partitioning directories at a \emph{predefined} threshold. Mantle makes headway
+in this space by providing a framework for exploring these policies, but does
+not attempt anything more sophisticated (e.g., machine learning) to create
+these policies. 
 
 % ml and autotuning
 Auto-tuning is a well-known technique used in
@@ -34,18 +35,12 @@ HPC~\cite{behzad:sc2013-autotuning, behzad:techreport2014-io-autotuning}, big
 data systems systems~\cite{herodotou_starfish_2011}, and
 databases~\cite{schnaitter_index_2009}.  Like our work, these systems focus on
 the physical design of the storage ({\it e.g.} cache size) but since we focused
-on a relatively small set of parameters (cache size, migration tresholds), we
+on a relatively small set of parameters (cache size, migration thresholds), we
 did not need anything as sophisticated as the genetic algorithm used
 in~\cite{behzad:sc2013-autotuning}.  We cannot drop these techniques into
 ParSplice because the magnitude and speed of the workload hotspots/flash crowds
 makes existing approaches less applicable. 
 
-Our goal is to use MDHIM~\cite{greenberg:hotstorage2015-mdhim} as our back-end
+Our plan is to use MDHIM~\cite{greenberg:hotstorage2015-mdhim} as our back-end
 key-value store because it was designed for HPC and has the proper mechanisms
-for migration already implemented.  MDHIM tailors its mechanisms and policies
-to HPC, showing improved performance over cloud-based key-value stores like
-Cassandra~\cite{lakshman_cassandra_2010}. It has cursor types for walking the
-key-value store, bulk operations for exploiting data locality, per-job server
-spawning, and pluggable back-ends for its local database and network type
-(infiniband/RDMA). Its policies are extensible, supporting customized partitioning
-strategies and user-defined secondary indices.
+for migration already implemented.  
