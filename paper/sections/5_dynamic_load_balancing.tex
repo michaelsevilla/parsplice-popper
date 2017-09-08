@@ -5,7 +5,7 @@
 Despite the memory savings, our results suggest that dynamic load balancing
 policies could save even more memory.  Figure~\ref{fig:methodology-tradeoff}
 show that a 100K key cache is sufficient as a static policy but the top graph
-in Figure~\ref{fig:futurework-regimes} indicates that the cache size could be
+in Figure~\ref{fig:motivation-regimes} indicates that the cache size could be
 much smaller. That graph shows that the beginning of the run is characterized
 by many reads to a small set of keys and the end sees much lower reads per
 second to a larger keyspace. Specifically, it shows only about 100 keys as
@@ -14,13 +14,13 @@ active in the latter half of the run, so a smaller cache should indeed suffice.
 After analyzing traces, we see that the 100 key cache is insufficient because
 LevelDB cannot service the read-write traffic. By limiting the size of the
 cache, some reads must traverse up the ParSplice cache hierarchy to the
-persistent database.  According to Figure~\ref{fig:futurework-regimes}, the
+persistent database.  According to Figure~\ref{fig:motivation-regimes}, the
 read requests arrive at 750 reads per second in addition to the writes that
 land in each tier (about 300 puts/second, some redundant). This traffic
-triggers a LevelDB compaction and reads block and eventually pile up, resulting
-in very slow progress. Traces verify this hypothesis and show reads getting
-backed up as the read/write ratio explodes. To recap, small caches incur too
-much load on persistent database  at the beginning of the run but smaller caches should
+triggers a LevelDB compaction and reads block, resulting in very slow progress.
+Traces verify this hypothesis and show reads getting backed up as the
+read/write ratio increases. To recap, small caches incur too much load on the
+persistent database  at the beginning of the run but smaller caches should
 suffice after the initial read flash crowd passes because the keyspace is far
 less active. This suggests a two-part load balancing policy.
 
@@ -36,17 +36,15 @@ The succinctness of the API lets users inject multiple, dynamic policies.
 Although ParSplice does not use a distributed file system, its workload is very
 similar because the minima key-value store responds to small and frequent
 requests, which results in hot spots and flash crowds.  Distributed file
-systems solve similar issues and finding optimal ways to measure, migrate, and
-partition metadata load has been shown to lead to large performance gains and
-more scalable file systems~\cite{zheng:pdsw2014-batchfs,
-zheng:pdsw2015-deltafs, grider:pdsw2015-marfs, ren:sc2014-indexfs,
-patil:fast2011-giga+, brandt:msst2003-lh}.  Both workloads also have data
-locality so the storage should have mechanisms for leveraging requests with
-similar semantic meaning.  Previous work quantified the speedups achieved with
+systems try to find optimal ways to measure, migrate, and partition metadata
+load and modern research file systems have shown large performance gains and
+better scalability~\cite{zheng:pdsw2014-batchfs, zheng:pdsw2015-deltafs,
+grider:pdsw2015-marfs, ren:sc2014-indexfs, patil:fast2011-giga+,
+brandt:msst2003-lh}.  Previous work quantified the speedups achieved with
 Mantle and formalized balancers that were good for file systems.
 
 \begin{figure}[t]
-  \noindent\includegraphics[width=0.4\textwidth]{figures/methodology-tradeoff-dynamic.png}\\
+  \noindent\includegraphics[height=4.5cm,width=0.4\textwidth]{figures/methodology-tradeoff-dynamic.png}\\
   \caption{The performance and resource utilization trade-off of using a
   dynamic load balancing policy that switches to a smaller cache after absorbing
   the initial burstiness of the workload. The sizes of these smaller caches are
@@ -54,27 +52,27 @@ Mantle and formalized balancers that were good for file systems.
 \end{figure}
 
 Figure~\ref{fig:methodology-tradeoff-dynamic} shows the results of using the
-Mantle API to program a dynamic load balancing policy with two phases into
+Mantle API to program a dynamic load balancing policy into
 ParSplice:
 
 \begin{itemize}
-  \item unlimited growth: cache increases on every write
-  \item \(n\) key limit: cache maintained at this size
+  \item unlimited growth policy: cache increases on every write
+  \item \(n\) key limit policy: cache constrained to \(n\) keys
 \end{itemize}
 
 We trigger the policy switch at 100K keys to absorb the flash crowd at the
 beginning of the run. Once triggered, keys are evicted to bring the size of the
-cache down to the threshold and the least recently keys are actively evicted.
-In that bar chart, the cache sizes are along the \(x\)-axis.
+cache down to the threshold and the least recently used keys are evicted.
+In that bar chart, the cache sizes are along the \(x\) axis.
 
 % results: same level of performance can be achieved 
 The dynamic policies show better performance than the single \(n\) key
-policies. The performance and memory utilization for 100K is the same as the
-100K bar in the middle graphs but the rest reduce the size of the keyspace
-after the read flash crowd. This reduced read/write traffic on the
-persistent database and lowers the number of stalls.  The worst performing
-policy is the 10 key cache, which achieves 94\% of the performance while only
-using 40KB of memory. 
+policies. The performance and memory utilization for a 100K key cache size is
+the same as the 100K bar in the middle graphs but the rest reduce the size of
+the keyspace after the read flash crowd. This reduces read/write traffic on the
+persistent database and lowers the number of stalls.  We see the worst
+performance when the engine switches to the 10 key limit policy, which achieves
+94\% of the performance while only using 40KB of memory. 
 
 % caveats: it is calculating 90% of the trajectory, memory value reported is final
 \subsubsection*{Caveats}
@@ -88,7 +86,7 @@ Figure~\ref{fig:methodology-trajectory}; as the nanoparticle grows it takes
 longer to generate segments so by the time we reach 2 hours, over 90\% of the
 trajectory is already generated.  For (2), the memory footprint is around 0.4GB
 until we reach 100K key threshold. In
-Figures~\ref{fig:methodology-tradeoff-dynamic}
+Figures~\ref{fig:methodology-tradeoff}
 and~\ref{fig:methodology-tradeoff-dynamic} we plot the final value. For (3),
 Figure~\ref{fig:methodology-trajectory} shows that the cache fills up with 100K
 keys at time 7200 seconds and its size is reduced to the size listed in the
@@ -99,12 +97,11 @@ sufficient policies for the 2.5 hour runs but anything longer would need a
 different dynamic load balancing policy.
 
 \begin{figure}[t]
-  \noindent\includegraphics[width=0.4\textwidth]{figures/methodology-trajectory.png}\\
+  \noindent\includegraphics[height=4.5cm,width=0.4\textwidth]{figures/methodology-trajectory.png}\\
   \caption{The rate that the trajectory is computed decays over time (which is
   expected) but this skews the performance improvements in
-  Figure~\ref{fig:methodology-tradeoff}. While the dynamic policy we designed
-  does not work for 4 hours, it does work for our target
-  runtime of 2.5 hours. \label{fig:methodology-trajectory}}
+  Figure~\ref{fig:methodology-tradeoff-dynamic}. Our dynamic policy works for 2.5
+  hour jobs but not for 4 hour jobs.  \label{fig:methodology-trajectory}}
 \end{figure}
 
 % but the result is still valid

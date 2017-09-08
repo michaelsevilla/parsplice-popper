@@ -1,17 +1,22 @@
 \section{Conclusion}
 
-Load balancing is a well-known technique for alleviating load and improving
-performance, yet finding the best policies for applications is still a
-hands-on, tedious process. If a load balancing module were to be accepted into
-a suite of services like the Mochi project, it must transcend domains and be
-useful to a wide-range of applications. In this paper, we present the framework
-for such a load balancing service which (1) helps administrators explore the
-techniques for informing load balancing, (2) supports dynamic policies for
-quickly changing workloads and higher level intelligence.  We demonstrate (1)
-with a keyspace analysis for ParSplice and use our findings to design a load
-balancing policy that improves resource utilization.  To drive the policy
-engine designed in (2), we show that a single policy is inadequate and that
-Mantle is flexible enough to explore policies generated with machine learning.
-It is our hope that the introduction of the Mantle approach encourages the use
-of machine learning and auto-tuning for policy design in future storage
-systems.
+Load balancing is a well-know technique for improving storage system
+performance, yet finding the best policies is a difficult, multi-dimensional
+problem. Rather than attempting to construct a single, complex load balancing
+policy that works for a variety of scenarios, we instead use the Mantle
+framework as a \emph{microservice} approach to load balancing that enables
+software-defined storage systems to flexibly change policies as the workload
+changes over time.  In our analysis of the ParSplice key-value workload we have
+detected clear workload regimes that are sensitive to the initial conditions
+and the scale and duration of the simulation. We have also demonstrated that
+changing load balancing policies at runtime in response to the current workload
+is an effective mechanism to providing better load distribution.  Finally, we
+have demonstrated that the pattern matching strengths of many machine learning
+algorithms is an effective mechanism for detecting access pattern regimes
+within the ParSplice application's key-value usage.
+
+%Our next steps are to integrate Mantle and the HXHIM distributed key-value
+%storage service into ParSplice and dynamically select from a variety of load
+%balancing policies based on the current access regime.  More speculatively, we
+%hope to leverage machine learning models that assist in the selection or even
+%creation of those load balancing policies.  

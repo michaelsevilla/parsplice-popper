@@ -14,7 +14,7 @@
 %\setcopyright{usgovmixed}
 %\setcopyright{cagov}
 %\setcopyright{cagovmixed}
-
+\setlength{\belowcaptionskip}{-17pt}
 
 %% DOI
 %\acmDOI{10.475/123_4}
@@ -46,24 +46,24 @@
 
 \author{Michael A. Sevilla, Carlos Maltzahn}
 \affiliation{\institution{University of California, Santa Cruz}}
-\email{{msevilla, carlosm}@soe.ucsc.edu}
+%\email{{msevilla, carlosm}@soe.ucsc.edu}
 
+\makeatother
 \author{Bradley W. Settlemyer, Danny Perez, David Rich, Galen M. Shipman (LANL)}
-\email{{bws, danny_perez, dor, gshipman}@lanl.gov}
+%\email{{bws, danny_perez, dor, gshipman}@lanl.gov}
 
 \begin{abstract}
 
-Using a detailed keyspace analysis we show the need for a distributed, load
-balancing key-value store for the ParSplice molecular dynamics simulation.  To
-enable this, we use the Mantle framework to change load balancing policies and
-to quantify performance. We then show the inefficiencies of load balancing
-using a single policy by designing a two-part, dynamic policy that achieves
-93\% efficiency with less than 1\% of the memory usage. Finding this policy was
-tedious and done by hand, so we also present a machine learning approach that
-has the potential to feed into our load balancing policy engine.  The paper
-shows the usefulness of the Mantle approach for key-value store workloads and
-it our hope that the initial steps we have taken designing dynamic load
-balancing policies jump starts the community along similar efforts.
+Our analysis of the key-value activity generated under multiple initial
+conditions, demonstrates the need for a distributed, load balancing key-value
+store for the ParSplice molecular dynamics simulation.  Our analysis indicates
+the presence of clear access regimes and hot spots that offer significant
+opportunity for optimization. We then leverage the Mantle load balancing
+framework, which was originally designed for distributed file systems, to
+dynamically switch policies and present a two policy scheme that achieves 93\%
+efficiency while using only 1\% of the memory resources required by the base
+case. Finally, we demonstrate how a machine learning clustering technique is an
+effective method for detecting access patterns within the keyspace over time.  
 
 \end{abstract}
 

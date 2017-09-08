@@ -18,12 +18,12 @@ single node.
 \begin{figure}[t]
   \noindent\includegraphics[width=0.4\textwidth]{figures/motivation-regimes.png}\\
   \caption{The keyspace activity for ParSplice runs using two different growth
-  rates.  The line shows the rate at which EOM minima values are retrieved
-  from the key-value store (\(y1\) axis) and the scattered points along the
-  bottom show the number of unique minima keys accessed in a 1 second sliding
-  window (\(y2\) axis).  \label{fig:motivation-regimes}}
+  rates, \(\Delta_1\) and \(\Delta_2\).  The line shows the rate at which EOM
+  minima values are retrieved from the key-value store (\(y1\) axis) and the
+  scattered points along the bottom show the number of unique minima keys
+  accessed in a 1 second sliding window (\(y2\) axis).
+  \label{fig:motivation-regimes}}
 \end{figure}
-
 
 To motivate the need for load balancing data across a distributed key-value store,
 we show how limiting the cache size saves memory and sacrifices negligible

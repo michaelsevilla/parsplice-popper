@@ -2,38 +2,36 @@
 \label{sec:parsplice}
 
 ParSplice~\cite{perez:jctc20150parsplice} is an accelerated molecular dynamics
-(MD) simulation tool developed at LANL. It is part of the Exascale Computing
-Project~\ref{CITE} and has a significant financial backing from the DOE sphere.
-Its phases are:
+(MD) simulation package developed at LANL. It is part of the Exascale Computing
+Project\footnote{http://www.exascale.org/bdec/} and is important to LANL's
+Materials for the Future science mission. Its phases are:
 
 \begin{enumerate}
 
-  \item splicer tells workers to generate segments (short MD trajectory) for
+  \item A splicer tells workers to generate segments (short MD trajectory) for
   specific states
 
-  \item workers read initial coordinates for their assigned segment from database 
+  \item workers read initial coordinates for their assigned segment from data store
 
   \item upon completion, workers insert final coordinates for each segment into
-  database, and wait for new segment assignment
+  data store, and wait for new segment assignment
 
 \end{enumerate}
 
 The computation can be parallelized by adding more workers or by adding worker
 tasks to parallelize individual workers.  The workers are stateless and read
-initial coordinates from the database every time they start generating
+initial coordinates from the data store each time they begin generating
 segments. Since worker tasks do not maintain their own history, they can end up
 reading the same coordinates repeatedly. To mitigate the consequences of these
 repeated reads, ParSplice provisions a hierarchy of nodes to act as caches that
-sit in front of the persistent database.  Writes are stored on each tier and
-reads traverse up the hierarchy until they find their data. 
+sit in front of the persistent data store.  Values are written to each tier and
+reads traverse up the hierarchy until they find the data. 
 
-\subsection*{Input Deck}
-
-We use ParSplice to simulate the evolution of metallic nanoparticles that grow
+ParSplice simulates the evolution of metallic nanoparticles that grow
 from the vapor phase. As the run progresses, the energy landscape of the system
-becomes more complex. Two factors control the number of entries in the
-database: the growth rate and the temperature. The growth rate controls how
-quickly new atoms are added to the nanoparticle: fast rates lead to
+becomes more complex. Two domain factors control the number of entries in the
+data store: the growth rate, \(\Delta\), and the temperature. The growth rate controls how
+quickly new atoms are added to the nanoparticle: fast growth rates lead to
 non-equilibrium conditions, and hence increase the number of states that can be
 visited. However, as the particle grows, the simulation slows down because the
 calculations become more expensive, limiting the rate at which new states are
@@ -41,11 +39,11 @@ visited. On the other hand, the temperature controls how easily a trajectory
 can jump from state to state; higher temperatures lead to more frequent
 transitions.
 
-The nanoparticle simulation stresses the database architecture of ParSplice. It
+The nanoparticle simulation stresses the data store architecture of ParSplice. It
 visits more states than other input decks because the system uses a cheap
 potential, has a small number of atoms, and a complex energy landscape with
-many accessible states. Changing the growth rate and temperature changes the
-size, shape, and locality of the database keyspace. Lower temperatures and
+many accessible states. Changing growth rates and temperature changes the
+size, shape, and locality of the data store keyspace. Lower temperatures and
 smaller growth rates create hotter keys with smaller keyspaces as many segments
 are generated in the same set of states, before the trajectory can escape to a
 new region of state space.
